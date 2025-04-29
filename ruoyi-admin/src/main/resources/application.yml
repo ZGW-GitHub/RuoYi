@@ -1,6 +1,6 @@
 # 项目相关配置
 ruoyi:
-  # 名称
+  # 名称(需为英文)
   name: RuoYi
   # 版本
   version: 4.8.0
