@@ -80,7 +80,9 @@ spring:
     restart:
       # 热部署开关
       enabled: true
-
+  # JMX 配置
+  jmx:
+    default-domain: ${ruoyi.name}
 # MyBatis
 mybatis:
   # 搜索指定包别名
