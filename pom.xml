@@ -34,6 +34,8 @@
         <tomcat.version>9.0.102</tomcat.version>
         <logback.version>1.2.13</logback.version>
         <spring-framework.version>5.3.39</spring-framework.version>
+        <!-- 自增工具 -->
+        <hutool.version>5.8.18</hutool.version>
     </properties>
 
     <!-- 依赖声明 -->
@@ -229,6 +231,12 @@
                 <version>${ruoyi.version}</version>
             </dependency>
 
+            <!-- 工具：HuTool -->
+            <dependency>
+                <groupId>cn.hutool</groupId>
+                <artifactId>hutool-core</artifactId>
+                <version>${hutool.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -239,6 +247,7 @@
         <module>ruoyi-quartz</module>
         <module>ruoyi-generator</module>
         <module>ruoyi-common</module>
+        <module>ruoyi-meeting</module>
         <module>ruoyi-template</module>
     </modules>
     <packaging>pom</packaging>
