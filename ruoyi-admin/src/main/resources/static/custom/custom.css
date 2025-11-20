@@ -1,0 +1,12 @@
+/* 普通表格表头 */
+.bootstrap-table .fixed-table-container .table thead th {
+    height: 40px;
+    vertical-align: middle;
+    /*text-align: center;*/
+}
+/* Tree 表格表头 */
+.bootstrap-tree-table .treetable-table .table thead th {
+    height: 40px;
+    vertical-align: middle;
+    /*text-align: center;*/
+}
