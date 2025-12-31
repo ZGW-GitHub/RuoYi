@@ -9,14 +9,16 @@ ruoyi:
   # 实例演示开关
   demoEnabled: true
   # 文件路径 示例（ Windows配置D:/ruoyi/uploadPath，Linux配置 /home/ruoyi/uploadPath）
-  profile: /home/ruoyi/profile
+  # profile: /home/ruoyi/profile
+  profile: /Users/snow/Documents/work-profile/source-ruoyi
+  logPath: ${ruoyi.profile}/service-logs
   # 获取ip地址开关
   addressEnabled: false
 
 # 开发环境配置
 server:
   # 服务器的HTTP端口，默认为80
-  port: 80
+  port: 54321
   servlet:
     # 应用的访问路径
     context-path: /
@@ -108,7 +110,7 @@ shiro:
     # 首页地址
     indexUrl: /index
     # 验证码开关
-    captchaEnabled: true
+    captchaEnabled: false
     # 验证码类型 math 数字计算 char 字符验证
     captchaType: math
   cookie:
