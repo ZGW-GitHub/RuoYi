@@ -79,6 +79,6 @@ public interface TopicInfoService {
      */
     void download(Long id, HttpServletResponse response);
 
-    AjaxResult audit(Long id, Boolean auditResult, Boolean auditRemark);
+    AjaxResult audit(Long id, Boolean auditResult, String auditRemark);
 
 }

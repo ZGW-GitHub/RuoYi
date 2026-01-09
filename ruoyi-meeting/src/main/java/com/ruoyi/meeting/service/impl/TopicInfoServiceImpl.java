@@ -1,6 +1,7 @@
 package com.ruoyi.meeting.service.impl;
 
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.json.JSONUtil;
 import com.alibaba.fastjson.JSON;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.dto.FileInfo;
@@ -9,6 +10,7 @@ import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.common.utils.FileDownloadUtil;
 import com.ruoyi.common.utils.FileUploadUtil;
+import com.ruoyi.meeting.domain.MeetingExtInfoDTO;
 import com.ruoyi.meeting.domain.TopicInfo;
 import com.ruoyi.meeting.enums.TopicStatusEnum;
 import com.ruoyi.meeting.enums.TopicTypeEnum;
@@ -279,13 +281,15 @@ public class TopicInfoServiceImpl implements TopicInfoService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public AjaxResult audit(Long id, Boolean auditResult, Boolean auditRemark) {
+    public AjaxResult audit(Long id, Boolean auditResult, String auditRemark) {
         TopicInfo topicInfo = selectById(id);
         if (topicInfo == null) {
             throw new ServiceException("议题不存在");
         }
 
         topicInfo.setTopicStatus(auditResult ? TopicStatusEnum.APPROVED.getCode() : TopicStatusEnum.REJECTED.getCode());
+        MeetingExtInfoDTO extInfo = MeetingExtInfoDTO.addInfo(topicInfo.getExtInfo(), dto -> dto.setAuditRemark(auditRemark));
+        topicInfo.setExtInfo(JSONUtil.toJsonStr(extInfo));
         update(topicInfo);
         return AjaxResult.success();
     }

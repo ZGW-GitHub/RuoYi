@@ -17,15 +17,22 @@ public class MeetingExtInfoDTO {
      */
     private String auditRemark;
 
-    public static <T> MeetingExtInfoDTO addInfo(String jsonStr, Consumer<T> setter, T value) {
-        if (StrUtil.isEmpty(jsonStr)) {
-            MeetingExtInfoDTO extInfo = new MeetingExtInfoDTO();
-
-            return extInfo;
+    public static MeetingExtInfoDTO addInfo(String jsonStr, Consumer<MeetingExtInfoDTO> setter) {
+        MeetingExtInfoDTO extInfo = toBean(jsonStr);
+        if (setter != null) {
+            setter.accept(extInfo);
         }
 
-        MeetingExtInfoDTO extInfo = JSONUtil.toBean(jsonStr, MeetingExtInfoDTO.class);
+        return extInfo;
+    }
 
+    public static MeetingExtInfoDTO toBean(String jsonStr) {
+        MeetingExtInfoDTO extInfo;
+        if (StrUtil.isEmpty(jsonStr)) {
+            extInfo = new MeetingExtInfoDTO();
+        } else {
+            extInfo = JSONUtil.toBean(jsonStr, MeetingExtInfoDTO.class);
+        }
         return extInfo;
     }
 

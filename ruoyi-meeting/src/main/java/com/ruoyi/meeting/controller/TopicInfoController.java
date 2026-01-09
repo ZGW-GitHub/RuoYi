@@ -163,7 +163,7 @@ public class TopicInfoController extends BaseController {
     @ResponseBody
     public AjaxResult audit(@RequestParam(value = "id") Long id,
                       @RequestParam(value = "auditResult") Boolean auditResult,
-                      @RequestParam(value = "auditRemark") Boolean auditRemark) {
+                      @RequestParam(value = "auditRemark") String auditRemark) {
         return topicInfoService.audit(id, auditResult, auditRemark);
     }
 
