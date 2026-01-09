@@ -33,22 +33,22 @@
             </div>
             <div class="col-xs-12">
                 <div class="form-group">
-                    <label class="col-sm-3 control-label">文件信息：</label>
+                    <label class="col-sm-3 control-label">议题文件：</label>
                     <div class="col-sm-8">
                         <input type="hidden" name="fileInfo">
                         <div class="file-loading">
-                            <input class="form-control file-upload" id="fileInfo" name="file" type="file">
+                            <input class="form-control file-upload" id="fileInfo" name="file" type="file" multiple>
                         </div>
                     </div>
                 </div>
             </div>
             <div class="col-xs-12">
                 <div class="form-group">
-                    <label class="col-sm-3 control-label">附件信息：</label>
+                    <label class="col-sm-3 control-label">附件：</label>
                     <div class="col-sm-8">
                         <input type="hidden" name="attachmentInfo">
                         <div class="file-loading">
-                            <input class="form-control file-upload" id="attachmentInfo" name="file" type="file">
+                            <input class="form-control file-upload" id="attachmentInfo" name="file" type="file" multiple>
                         </div>
                     </div>
                 </div>
@@ -79,12 +79,28 @@
 
         $(".file-upload").fileinput({
             uploadUrl: ctx + 'common/upload',
-            maxFileCount: 1,
-            autoReplace: true
+            maxFileCount: 10,
+            autoReplace: false,
+            showPreview: false,
+            showUpload: false,
+            allowedFileExtensions: ['pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'txt', 'jpg', 'jpeg', 'png', 'gif']
         }).on('fileuploaded', function (event, data, previewId, index) {
-            $("input[name='" + event.currentTarget.id + "']").val(data.response.url)
+            var currentValue = $("input[name='" + event.currentTarget.id + "']").val();
+            var newUrl = data.response.url;
+            if (currentValue) {
+                $("input[name='" + event.currentTarget.id + "']").val(currentValue + ',' + newUrl);
+            } else {
+                $("input[name='" + event.currentTarget.id + "']").val(newUrl);
+            }
         }).on('fileremoved', function (event, id, index) {
-            $("input[name='" + event.currentTarget.id + "']").val('')
+            // 当移除文件时，需要从隐藏字段中移除对应的URL
+            var hiddenInput = $("input[name='" + event.currentTarget.id + "']");
+            var currentValue = hiddenInput.val();
+            if (currentValue) {
+                var urls = currentValue.split(',');
+                urls.splice(index, 1);
+                hiddenInput.val(urls.join(','));
+            }
         })
     </script>
 </body>
