@@ -1,6 +1,6 @@
 package com.ruoyi.common.dto;
 
-import com.ruoyi.common.utils.UploadUtil;
+import com.ruoyi.common.utils.FileUploadUtil;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -11,14 +11,14 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
-public class FileInfoResp extends FileInfo {
+public class FileInfoDTO extends FileInfo {
 
     private String filePath;
 
-    public FileInfoResp(FileInfo fileInfo) {
+    public FileInfoDTO(FileInfo fileInfo) {
         this.setFileName(fileInfo.getFileName());
         this.setFileUrl(fileInfo.getFileUrl());
-        this.filePath = UploadUtil.fileUrlToPath(fileInfo.getFileUrl());
+        this.filePath = FileUploadUtil.fileUrlToPath(fileInfo.getFileUrl());
     }
 
 }

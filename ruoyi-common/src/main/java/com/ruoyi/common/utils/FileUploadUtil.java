@@ -18,7 +18,7 @@ import java.util.UUID;
  * @author Snow
  */
 @Slf4j
-public class UploadUtil {
+public class FileUploadUtil {
 
     public static String fileUrlToPath(String url) {
         return url.replace(Constants.RESOURCE_PREFIX, RuoYiConfig.getProfile());
@@ -55,7 +55,7 @@ public class UploadUtil {
                 // 创建文件信息
                 FileInfo fileInfo = new FileInfo();
                 fileInfo.setFileName(originalFilename);
-                fileInfo.setFileUrl(UploadUtil.filePathToUrl(destFile.getAbsolutePath()));
+                fileInfo.setFileUrl(FileUploadUtil.filePathToUrl(destFile.getAbsolutePath()));
 
                 fileInfoList.add(fileInfo);
             }

@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 /**
@@ -131,4 +132,18 @@ public class TopicInfoController extends BaseController {
     public AjaxResult remove(String ids) {
         return toAjax(topicInfoService.deleteByIds(ids));
     }
+
+    /**
+     * 下载议题文件
+     */
+    @RequiresPermissions("meeting:topicInfo:view")
+    @GetMapping("/download/{id}")
+    public void download(@PathVariable Long id, HttpServletResponse response) {
+        try {
+            topicInfoService.download(id, response);
+        } catch (Exception e) {
+            logger.error("下载议题文件失败", e);
+        }
+    }
+
 }

@@ -3,6 +3,7 @@ package com.ruoyi.meeting.service;
 import com.ruoyi.meeting.domain.TopicInfo;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 /**
@@ -68,5 +69,13 @@ public interface TopicInfoService {
     int update(TopicInfo topicInfo,
                MultipartFile[] fileInfoFiles, MultipartFile[] attachmentInfoFiles,
                String retainedFileInfo, String retainedAttachmentInfo);
+
+    /**
+     * 下载议题文件
+     *
+     * @param id       议题ID
+     * @param response HTTP响应
+     */
+    void download(Long id, HttpServletResponse response);
 
 }

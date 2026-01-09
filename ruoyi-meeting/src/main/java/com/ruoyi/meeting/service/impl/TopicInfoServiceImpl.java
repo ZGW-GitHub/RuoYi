@@ -3,8 +3,10 @@ package com.ruoyi.meeting.service.impl;
 import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson.JSON;
 import com.ruoyi.common.dto.FileInfo;
+import com.ruoyi.common.dto.FileInfoDTO;
 import com.ruoyi.common.utils.DateUtils;
-import com.ruoyi.common.utils.UploadUtil;
+import com.ruoyi.common.utils.FileDownloadUtil;
+import com.ruoyi.common.utils.FileUploadUtil;
 import com.ruoyi.meeting.domain.TopicInfo;
 import com.ruoyi.meeting.enums.TopicStatusEnum;
 import com.ruoyi.meeting.enums.TopicTypeEnum;
@@ -16,8 +18,13 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletResponse;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 议题Service业务层处理
@@ -89,7 +96,7 @@ public class TopicInfoServiceImpl implements TopicInfoService {
     public int deleteByIds(String ids) {
         List<String> idList = StrUtil.split(ids, StrUtil.COMMA);
         topicInfoMapper.deleteBatchIds(idList);
-        idList.forEach(id -> UploadUtil.deleteFile(UploadUtil.getTopicFilePath(Long.valueOf(id))));
+        idList.forEach(id -> FileUploadUtil.deleteFile(FileUploadUtil.getTopicFilePath(Long.valueOf(id))));
         return 1;
     }
 
@@ -123,19 +130,19 @@ public class TopicInfoServiceImpl implements TopicInfoService {
             if (attachmentInfoFiles != null && attachmentInfoFiles.length > 6) {
                 throw new RuntimeException("附件不能超过6个");
             }
-            
+
             insert(topicInfo);
 
             // 处理议题文件
-            String uploadPath = UploadUtil.getTopicFilePath(topicInfo.getId());
+            String uploadPath = FileUploadUtil.getTopicFilePath(topicInfo.getId());
             if (fileInfoFiles != null && fileInfoFiles.length > 0) {
-                List<FileInfo> fileInfoList = UploadUtil.saveFile(uploadPath, fileInfoFiles);
+                List<FileInfo> fileInfoList = FileUploadUtil.saveFile(uploadPath, fileInfoFiles);
                 topicInfo.setFileInfo(JSON.toJSONString(fileInfoList));
             }
 
             // 处理附件
             if (attachmentInfoFiles != null && attachmentInfoFiles.length > 0) {
-                List<FileInfo> attachmentInfoList = UploadUtil.saveFile(uploadPath, attachmentInfoFiles);
+                List<FileInfo> attachmentInfoList = FileUploadUtil.saveFile(uploadPath, attachmentInfoFiles);
                 topicInfo.setAttachmentInfo(JSON.toJSONString(attachmentInfoList));
             }
 
@@ -166,7 +173,7 @@ public class TopicInfoServiceImpl implements TopicInfoService {
             List<FileInfo> finalFileInfoList = new ArrayList<>();
 
             // 添加保留的现有文件
-            String uploadPath = UploadUtil.getTopicFilePath(topicInfo.getId());
+            String uploadPath = FileUploadUtil.getTopicFilePath(topicInfo.getId());
             if (retainedFileInfo != null && !retainedFileInfo.isEmpty()) {
                 List<FileInfo> retainedFiles = JSON.parseArray(retainedFileInfo, FileInfo.class);
                 finalFileInfoList.addAll(retainedFiles);
@@ -174,7 +181,7 @@ public class TopicInfoServiceImpl implements TopicInfoService {
 
             // 添加新上传的文件
             if (fileInfoFiles != null && fileInfoFiles.length > 0) {
-                List<FileInfo> newFiles = UploadUtil.saveFile(uploadPath, fileInfoFiles);
+                List<FileInfo> newFiles = FileUploadUtil.saveFile(uploadPath, fileInfoFiles);
                 finalFileInfoList.addAll(newFiles);
             }
 
@@ -200,7 +207,7 @@ public class TopicInfoServiceImpl implements TopicInfoService {
 
             // 添加新上传的附件
             if (attachmentInfoFiles != null && attachmentInfoFiles.length > 0) {
-                List<FileInfo> newAttachments = UploadUtil.saveFile(uploadPath, attachmentInfoFiles);
+                List<FileInfo> newAttachments = FileUploadUtil.saveFile(uploadPath, attachmentInfoFiles);
                 finalAttachmentInfoList.addAll(newAttachments);
             }
 
@@ -220,6 +227,52 @@ public class TopicInfoServiceImpl implements TopicInfoService {
             log.error("更新议题失败: {}", e.getMessage(), e);
             throw new RuntimeException("更新议题失败：" + e.getMessage(), e);
         }
+    }
+
+    /**
+     * 下载议题文件
+     *
+     * @param id       议题ID
+     * @param response HTTP响应
+     */
+    @Override
+    public void download(Long id, HttpServletResponse response) {
+        // 查询议题信息
+        TopicInfo topicInfo = selectById(id);
+        if (topicInfo == null) {
+            throw new RuntimeException("议题不存在");
+        }
+
+        // 获取文件存储路径
+        String uploadPath = FileUploadUtil.getTopicFilePath(id);
+        Path topicDir = Paths.get(uploadPath);
+
+        if (!Files.exists(topicDir)) {
+            throw new RuntimeException("议题文件目录不存在");
+        }
+
+        // 解析文件信息
+        List<FileInfo> allFiles = new ArrayList<>();
+
+        // 添加议题文件
+        if (StrUtil.isNotEmpty(topicInfo.getFileInfo())) {
+            List<FileInfo> fileInfoList = JSON.parseArray(topicInfo.getFileInfo(), FileInfo.class);
+            allFiles.addAll(fileInfoList);
+        }
+
+        // 添加附件文件
+        if (StrUtil.isNotEmpty(topicInfo.getAttachmentInfo())) {
+            List<FileInfo> attachmentInfoList = JSON.parseArray(topicInfo.getAttachmentInfo(), FileInfo.class);
+            allFiles.addAll(attachmentInfoList);
+        }
+
+        if (allFiles.isEmpty()) {
+            throw new RuntimeException("该议题没有文件可下载");
+        }
+
+        String zipFileName = topicInfo.getTitle() + "_议题文件_" + System.currentTimeMillis() + ".zip";
+        List<FileInfoDTO> fileList = allFiles.stream().map(FileInfoDTO::new).collect(Collectors.toList());
+        FileDownloadUtil.downloadZip(zipFileName, fileList, response);
     }
 
 }
