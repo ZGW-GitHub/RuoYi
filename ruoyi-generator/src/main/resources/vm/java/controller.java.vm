@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.enums.BusinessType;
 import ${packageName}.domain.${ClassName};
-import ${packageName}.service.I${ClassName}Service;
+import ${packageName}.service.${ClassName}Service;
 import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.utils.poi.ExcelUtil;
@@ -38,7 +38,7 @@ public class ${ClassName}Controller extends BaseController {
     private final String prefix = "${moduleName}/${businessName}";
 
     @Resource
-    private I${ClassName}Service ${className}Service;
+    private ${ClassName}Service ${className}Service;
 
     @RequiresPermissions("${permissionPrefix}:view")
     @GetMapping()
@@ -55,7 +55,7 @@ public class ${ClassName}Controller extends BaseController {
     @ResponseBody
     public TableDataInfo list(${ClassName} ${className}) {
         startPage();
-        List<${ClassName}> list = ${className}Service.select${ClassName}List(${className});
+        List<${ClassName}> list = ${className}Service.selectList(${className});
         return getDataTable(list);
     }
 #elseif($table.tree)
@@ -66,7 +66,7 @@ public class ${ClassName}Controller extends BaseController {
     @PostMapping("/list")
     @ResponseBody
     public List<${ClassName}> list(${ClassName} ${className}) {
-        List<${ClassName}> list = ${className}Service.select${ClassName}List(${className});
+        List<${ClassName}> list = ${className}Service.selectList(${className});
         return list;
     }
 #end
@@ -79,8 +79,8 @@ public class ${ClassName}Controller extends BaseController {
     @PostMapping("/export")
     @ResponseBody
     public AjaxResult export(${ClassName} ${className}) {
-        List<${ClassName}> list = ${className}Service.select${ClassName}List(${className});
-        ExcelUtil<${ClassName}> util = new ExcelUtil<${ClassName}>(${ClassName}.class);
+        List<${ClassName}> list = ${className}Service.selectList(${className});
+        ExcelUtil<${ClassName}> util = new ExcelUtil<>(${ClassName}.class);
         return util.exportExcel(list, "${functionName}数据");
     }
 
@@ -115,7 +115,7 @@ public class ${ClassName}Controller extends BaseController {
     @PostMapping("/add")
     @ResponseBody
     public AjaxResult addSave(${ClassName} ${className}) {
-        return toAjax(${className}Service.insert${ClassName}(${className}));
+        return toAjax(${className}Service.insert(${className}));
     }
 
     /**
@@ -124,7 +124,7 @@ public class ${ClassName}Controller extends BaseController {
     @RequiresPermissions("${permissionPrefix}:edit")
     @GetMapping("/edit/{${pkColumn.javaField}}")
     public String edit(@PathVariable("${pkColumn.javaField}") ${pkColumn.javaType} ${pkColumn.javaField}, ModelMap mmap) {
-        ${ClassName} ${className} = ${className}Service.select${ClassName}By${pkColumn.capJavaField}(${pkColumn.javaField});
+        ${ClassName} ${className} = ${className}Service.selectBy${pkColumn.capJavaField}(${pkColumn.javaField});
         mmap.put("${className}", ${className});
         return prefix + "/edit";
     }
@@ -137,7 +137,7 @@ public class ${ClassName}Controller extends BaseController {
     @PostMapping("/edit")
     @ResponseBody
     public AjaxResult editSave(${ClassName} ${className}) {
-        return toAjax(${className}Service.update${ClassName}(${className}));
+        return toAjax(${className}Service.update(${className}));
     }
 
 #if($table.crud || $table.sub)
@@ -149,7 +149,7 @@ public class ${ClassName}Controller extends BaseController {
     @PostMapping( "/remove")
     @ResponseBody
     public AjaxResult remove(String ids) {
-        return toAjax(${className}Service.delete${ClassName}By${pkColumn.capJavaField}s(ids));
+        return toAjax(${className}Service.deleteBy${pkColumn.capJavaField}s(ids));
     }
 #elseif($table.tree)
     /**
@@ -160,7 +160,7 @@ public class ${ClassName}Controller extends BaseController {
     @GetMapping("/remove/{${pkColumn.javaField}}")
     @ResponseBody
     public AjaxResult remove(@PathVariable("${pkColumn.javaField}") ${pkColumn.javaType} ${pkColumn.javaField}) {
-        return toAjax(${className}Service.delete${ClassName}By${pkColumn.capJavaField}(${pkColumn.javaField}));
+        return toAjax(${className}Service.deleteBy${pkColumn.capJavaField}(${pkColumn.javaField}));
     }
 #end
 #if($table.tree)

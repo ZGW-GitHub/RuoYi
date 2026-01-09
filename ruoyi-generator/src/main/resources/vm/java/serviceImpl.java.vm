@@ -20,7 +20,7 @@ import ${packageName}.domain.${subClassName};
 #end
 import ${packageName}.mapper.${ClassName}Mapper;
 import ${packageName}.domain.${ClassName};
-import ${packageName}.service.I${ClassName}Service;
+import ${packageName}.service.${ClassName}Service;
 import com.ruoyi.common.core.text.Convert;
 
 import javax.annotation.Resource;
@@ -32,7 +32,7 @@ import javax.annotation.Resource;
  * @date ${datetime}
  */
 @Service
-public class ${ClassName}ServiceImpl implements I${ClassName}Service {
+public class ${ClassName}ServiceImpl implements ${ClassName}Service {
 
     @Resource
     private ${ClassName}Mapper ${className}Mapper;
