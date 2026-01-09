@@ -1,5 +1,6 @@
 package com.ruoyi.meeting.domain;
 
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.ruoyi.common.annotation.Excel;
 import com.ruoyi.common.core.domain.BaseEntity;
@@ -20,6 +21,7 @@ public class TopicInfo extends BaseEntity {
     private static final long serialVersionUID = 1L;
 
     /** id */
+    @TableId
     private Long id;
 
     /** 标题 */

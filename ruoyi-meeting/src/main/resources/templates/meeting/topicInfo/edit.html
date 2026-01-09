@@ -2,7 +2,6 @@
 <html lang="zh" xmlns:th="http://www.thymeleaf.org" >
 <head>
     <th:block th:include="include :: header('修改议题')" />
-    <th:block th:include="include :: bootstrap-fileinput-css"/>
 </head>
 <body class="white-bg">
     <div class="wrapper wrapper-content animated fadeInRight ibox-content">
@@ -34,23 +33,21 @@
             </div>
             <div class="col-xs-12">
                 <div class="form-group">
-                    <label class="col-sm-3 control-label">文件信息：</label>
+                    <label class="col-sm-3 control-label">议题文件：</label>
                     <div class="col-sm-8">
-                        <input type="hidden" name="fileInfo" th:field="*{fileInfo}">
-                       <div class="file-loading">
-                            <input class="form-control file-upload" id="fileInfo" name="file" type="file">
-                        </div>
+                        <input class="form-control" id="fileInfo" name="fileInfoFiles" type="file" multiple accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.jpg,.jpeg,.png,.gif">
+                        <div id="fileInfo-list" class="file-list" style="margin-top: 10px;"></div>
+                        <div id="fileInfo-existing" class="existing-files" style="margin-top: 10px;"></div>
                     </div>
                 </div>
             </div>
             <div class="col-xs-12">
                 <div class="form-group">
-                    <label class="col-sm-3 control-label">附件信息：</label>
+                    <label class="col-sm-3 control-label">附件：</label>
                     <div class="col-sm-8">
-                        <input type="hidden" name="attachmentInfo" th:field="*{attachmentInfo}">
-                       <div class="file-loading">
-                            <input class="form-control file-upload" id="attachmentInfo" name="file" type="file">
-                        </div>
+                        <input class="form-control" id="attachmentInfo" name="attachmentInfoFiles" type="file" multiple accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.jpg,.jpeg,.png,.gif">
+                        <div id="attachmentInfo-list" class="file-list" style="margin-top: 10px;"></div>
+                        <div id="attachmentInfo-existing" class="existing-files" style="margin-top: 10px;"></div>
                     </div>
                 </div>
             </div>
@@ -65,33 +62,153 @@
         </form>
     </div>
     <th:block th:include="include :: footer" />
-    <th:block th:include="include :: bootstrap-fileinput-js"/>
     <script th:inline="javascript">
         var prefix = ctx + "meeting/topicInfo";
+        var existingFileInfo = /*[[${topicInfo.fileInfo}]]*/ '';
+        var existingAttachmentInfo = /*[[${topicInfo.attachmentInfo}]]*/ '';
+        
         $("#form-topicInfo-edit").validate({
             focusCleanup: true
         });
 
         function submitHandler() {
             if ($.validate.form()) {
-                $.operate.save(prefix + "/edit", $('#form-topicInfo-edit').serialize());
+                // 使用FormData提交包含文件的表单
+                var formData = new FormData(document.getElementById('form-topicInfo-edit'));
+                
+                // 添加保留的现有文件信息
+                var retainedFileInfo = getRetainedFiles('fileInfo');
+                var retainedAttachmentInfo = getRetainedFiles('attachmentInfo');
+                
+                if (retainedFileInfo.length > 0) {
+                    formData.append('retainedFileInfo', JSON.stringify(retainedFileInfo));
+                }
+                if (retainedAttachmentInfo.length > 0) {
+                    formData.append('retainedAttachmentInfo', JSON.stringify(retainedAttachmentInfo));
+                }
+                
+                $.ajax({
+                    url: prefix + "/edit",
+                    type: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function(result) {
+                        $.operate.successCallback(result);
+                    },
+                    error: function() {
+                        $.modal.alertError("系统错误");
+                    }
+                });
             }
         }
 
-        $(".file-upload").each(function (i) {
-            var val = $("input[name='" + this.id + "']").val()
-            $(this).fileinput({
-                'uploadUrl': ctx + 'common/upload',
-                initialPreviewAsData: true,
-                initialPreview: [val],
-                maxFileCount: 1,
-                autoReplace: true
-            }).on('fileuploaded', function (event, data, previewId, index) {
-                $("input[name='" + event.currentTarget.id + "']").val(data.response.url)
-            }).on('fileremoved', function (event, id, index) {
-                $("input[name='" + event.currentTarget.id + "']").val('')
-            })
-            $(this).fileinput('_initFileActions');
+        // 监听文件选择事件
+        $('#fileInfo, #attachmentInfo').on('change', function() {
+            displayFileList(this);
+        });
+
+        // 显示新选择的文件列表
+        function displayFileList(input) {
+            var fileListDiv = $('#' + input.id + '-list');
+            fileListDiv.empty();
+            
+            if (input.files && input.files.length > 0) {
+                for (var i = 0; i < input.files.length; i++) {
+                    var fileName = input.files[i].name;
+                    var fileItem = $('<div class="file-item" style="margin: 5px 0; padding: 8px; background: #e8f5e8; border-radius: 4px; display: flex; justify-content: space-between; align-items: center;">' +
+                        '<span class="file-name"><i class="fa fa-file-o" style="margin-right: 8px; color: #666;"></i>' + fileName + ' <span style="color: #28a745; font-size: 12px;">(新文件)</span></span>' +
+                        '<button type="button" class="btn btn-xs btn-danger remove-file" data-input-id="' + input.id + '" data-file-index="' + i + '">删除</button>' +
+                        '</div>');
+                    fileListDiv.append(fileItem);
+                }
+            }
+        }
+
+        // 显示现有文件
+        function displayExistingFiles() {
+            if (existingFileInfo) {
+                try {
+                    var fileInfoList = JSON.parse(existingFileInfo);
+                    displayExistingFileList('fileInfo', fileInfoList);
+                } catch (e) {
+                    console.error('解析文件信息失败:', e);
+                }
+            }
+            
+            if (existingAttachmentInfo) {
+                try {
+                    var attachmentInfoList = JSON.parse(existingAttachmentInfo);
+                    displayExistingFileList('attachmentInfo', attachmentInfoList);
+                } catch (e) {
+                    console.error('解析附件信息失败:', e);
+                }
+            }
+        }
+
+        function displayExistingFileList(fieldName, fileList) {
+            var existingDiv = $('#' + fieldName + '-existing');
+            existingDiv.empty();
+            
+            if (fileList && fileList.length > 0) {
+                for (var i = 0; i < fileList.length; i++) {
+                    var fileInfo = fileList[i];
+                    var fileItem = $('<div class="existing-file-item" data-field="' + fieldName + '" data-index="' + i + '" style="margin: 5px 0; padding: 8px; background: #f8f9fa; border-radius: 4px; display: flex; justify-content: space-between; align-items: center;">' +
+                        '<span class="file-name"><i class="fa fa-file-o" style="margin-right: 8px; color: #666;"></i>' +
+                        '<a href="' + fileInfo.fileUrl + '" target="_blank">' + fileInfo.fileName + '</a> <span style="color: #6c757d; font-size: 12px;">(现有文件)</span></span>' +
+                        '<button type="button" class="btn btn-xs btn-warning remove-existing-file">删除</button>' +
+                        '</div>');
+                    existingDiv.append(fileItem);
+                }
+            }
+        }
+
+        // 删除新选择的文件
+        $(document).on('click', '.remove-file', function() {
+            var button = $(this);
+            var inputId = button.data('input-id');
+            var fileIndex = button.data('file-index');
+            var input = document.getElementById(inputId);
+            
+            // 创建新的文件列表（排除要删除的文件）
+            var dt = new DataTransfer();
+            for (var i = 0; i < input.files.length; i++) {
+                if (i !== fileIndex) {
+                    dt.items.add(input.files[i]);
+                }
+            }
+            input.files = dt.files;
+            
+            // 重新显示文件列表
+            displayFileList(input);
+        });
+
+        // 删除现有文件
+        $(document).on('click', '.remove-existing-file', function() {
+            var button = $(this);
+            var fileItem = button.closest('.existing-file-item');
+            fileItem.remove();
+        });
+
+        // 获取保留的现有文件
+        function getRetainedFiles(fieldName) {
+            var retainedFiles = [];
+            $('#' + fieldName + '-existing .existing-file-item').each(function() {
+                var index = $(this).data('index');
+                var originalList = fieldName === 'fileInfo' ? 
+                    (existingFileInfo ? JSON.parse(existingFileInfo) : []) : 
+                    (existingAttachmentInfo ? JSON.parse(existingAttachmentInfo) : []);
+                
+                if (originalList[index]) {
+                    retainedFiles.push(originalList[index]);
+                }
+            });
+            return retainedFiles;
+        }
+
+        // 页面加载完成后显示现有文件
+        $(document).ready(function() {
+            displayExistingFiles();
         });
     </script>
 </body>

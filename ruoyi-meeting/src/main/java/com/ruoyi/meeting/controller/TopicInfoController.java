@@ -12,6 +12,7 @@ import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -78,8 +79,15 @@ public class TopicInfoController extends BaseController {
     @Log(title = "议题", businessType = BusinessType.INSERT)
     @PostMapping("/add")
     @ResponseBody
-    public AjaxResult addSave(TopicInfo topicInfo) {
-        return toAjax(topicInfoService.insert(topicInfo));
+    public AjaxResult addSave(TopicInfo topicInfo, 
+                             @RequestParam(value = "fileInfoFiles", required = false) MultipartFile[] fileInfoFiles,
+                             @RequestParam(value = "attachmentInfoFiles", required = false) MultipartFile[] attachmentInfoFiles) {
+        try {
+            return toAjax(topicInfoService.insert(topicInfo, fileInfoFiles, attachmentInfoFiles));
+        } catch (Exception e) {
+            logger.error("保存议题失败", e);
+            return AjaxResult.error("保存失败：" + e.getMessage());
+        }
     }
 
     /**
@@ -87,7 +95,7 @@ public class TopicInfoController extends BaseController {
      */
     @RequiresPermissions("meeting:topicInfo:edit")
     @GetMapping("/edit/{id}")
-    public String edit(@PathVariable("id") Long id, ModelMap mmap) {
+    public String edit(@PathVariable Long id, ModelMap mmap) {
         TopicInfo topicInfo = topicInfoService.selectById(id);
         mmap.put("topicInfo", topicInfo);
         return prefix + "/edit";
@@ -100,8 +108,17 @@ public class TopicInfoController extends BaseController {
     @Log(title = "议题", businessType = BusinessType.UPDATE)
     @PostMapping("/edit")
     @ResponseBody
-    public AjaxResult editSave(TopicInfo topicInfo) {
-        return toAjax(topicInfoService.update(topicInfo));
+    public AjaxResult editSave(TopicInfo topicInfo,
+                              @RequestParam(value = "fileInfoFiles", required = false) MultipartFile[] fileInfoFiles,
+                              @RequestParam(value = "attachmentInfoFiles", required = false) MultipartFile[] attachmentInfoFiles,
+                              @RequestParam(value = "retainedFileInfo", required = false) String retainedFileInfo,
+                              @RequestParam(value = "retainedAttachmentInfo", required = false) String retainedAttachmentInfo) {
+        try {
+            return toAjax(topicInfoService.update(topicInfo, fileInfoFiles, attachmentInfoFiles, retainedFileInfo, retainedAttachmentInfo));
+        } catch (Exception e) {
+            logger.error("更新议题失败", e);
+            return AjaxResult.error("更新失败：" + e.getMessage());
+        }
     }
 
     /**

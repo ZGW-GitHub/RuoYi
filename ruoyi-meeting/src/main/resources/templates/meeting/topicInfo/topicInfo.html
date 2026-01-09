@@ -78,12 +78,9 @@
                     title: '标题'
                 },
                 {
-                    field: 'topicStatus',
-                    title: '状态',
-                    formatter: function(value, row, index) {
-                       return $.table.selectDictLabel(topicStatusDatas, value);
-                    }
-                },
+                        field: 'orderNo',
+                        title: '序号'
+                    },
                 {
                     field: 'reportPeople',
                     title: '汇报人'
@@ -93,8 +90,11 @@
                     title: '汇报单位'
                 },
                 {
-                    field: 'orderNo',
-                    title: '序号'
+                        field: 'topicStatus',
+                        title: '状态',
+                        formatter: function(value, row, index) {
+                            return $.table.selectDictLabel(topicStatusDatas, value);
+                        }
                 },
                 {
                     title: '操作',

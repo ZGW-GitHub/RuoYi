@@ -5,6 +5,7 @@ import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.meeting.domain.MeetingInfo;
 import com.ruoyi.meeting.mapper.MeetingInfoMapper;
 import com.ruoyi.meeting.service.MeetingInfoService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -16,6 +17,7 @@ import java.util.List;
  * @author Snow
  * @date 2026-01-09
  */
+@Slf4j
 @Service
 public class MeetingInfoServiceImpl implements MeetingInfoService {
 

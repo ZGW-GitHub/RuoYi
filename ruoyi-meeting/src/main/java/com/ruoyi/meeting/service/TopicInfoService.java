@@ -1,6 +1,7 @@
 package com.ruoyi.meeting.service;
 
 import com.ruoyi.meeting.domain.TopicInfo;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -29,22 +30,6 @@ public interface TopicInfoService {
     List<TopicInfo> selectList(TopicInfo topicInfo);
 
     /**
-     * 新增议题
-     * 
-     * @param topicInfo 议题
-     * @return 结果
-     */
-    int insert(TopicInfo topicInfo);
-
-    /**
-     * 修改议题
-     * 
-     * @param topicInfo 议题
-     * @return 结果
-     */
-    int update(TopicInfo topicInfo);
-
-    /**
      * 批量删除议题
      * 
      * @param ids 需要删除的议题主键集合
@@ -59,4 +44,29 @@ public interface TopicInfoService {
      * @return 结果
      */
     int deleteById(Long id);
+
+    /**
+     * 新增议题（包含文件处理）
+     *
+     * @param topicInfo           议题信息
+     * @param fileInfoFiles       议题文件
+     * @param attachmentInfoFiles 附件文件
+     * @return 结果
+     */
+    int insert(TopicInfo topicInfo, MultipartFile[] fileInfoFiles, MultipartFile[] attachmentInfoFiles);
+
+    /**
+     * 修改议题（包含文件处理）
+     *
+     * @param topicInfo              议题信息
+     * @param fileInfoFiles          议题文件
+     * @param attachmentInfoFiles    附件文件
+     * @param retainedFileInfo       保留的现有文件信息
+     * @param retainedAttachmentInfo 保留的现有附件信息
+     * @return 结果
+     */
+    int update(TopicInfo topicInfo,
+               MultipartFile[] fileInfoFiles, MultipartFile[] attachmentInfoFiles,
+               String retainedFileInfo, String retainedAttachmentInfo);
+
 }
