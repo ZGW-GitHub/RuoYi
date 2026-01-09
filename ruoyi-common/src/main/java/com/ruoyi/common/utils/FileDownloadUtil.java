@@ -46,7 +46,6 @@ public class FileDownloadUtil {
                 } else {
                     log.warn("文件不存在: {}", filePath);
                 }
-                zipOut.finish();
             }
         } catch (Exception e) {
             log.error("下载议题文件失败: {}", e.getMessage(), e);
