@@ -147,6 +147,11 @@
                         if (urlTopicStatus === 'pending') {
                             actions.push('<a class="btn btn-success btn-xs ' + meetingSubmitFlag + '" href="javascript:void(0)" onclick="$.operate.edit(\'' + row.id + '\')"><i class="fa fa-edit"></i>编辑</a> ');
                         }
+                        // 审核按钮 - 只有审核权限且状态为pending时显示
+                        if (meetingAuditFlag && row.topicStatus === 'pending') {
+                            actions.push('<a class="btn btn-success btn-xs" href="javascript:void(0)" onclick="auditTopic(\'' + row.id + '\', true)"><i class="fa fa-check"></i>通过</a> ');
+                            actions.push('<a class="btn btn-warning btn-xs" href="javascript:void(0)" onclick="auditTopic(\'' + row.id + '\', false)"><i class="fa fa-times"></i>驳回</a> ');
+                        }
                         actions.push('<a class="btn btn-info btn-xs ' + meetingSubmitFlag + '" href="javascript:void(0)" onclick="downloadTopicFiles(\'' + row.id + '\')"><i class="fa fa-download"></i>下载议题文件</a> ');
                         actions.push('<a class="btn btn-danger btn-xs ' + meetingSubmitFlag + '" href="javascript:void(0)" onclick="$.operate.remove(\'' + row.id + '\')"><i class="fa fa-remove"></i>删除</a>');
 
@@ -164,6 +169,67 @@
             setTimeout(function() {
                 $.modal.closeLoading();
             }, 2000);
+        }
+
+        // 审核议题
+        function auditTopic(topicId, auditResult) {
+            if (auditResult) {
+                // 通过审核
+                $.modal.confirm("确认通过该议题吗？", function() {
+                    $.ajax({
+                        url: prefix + "/audit",
+                        type: "POST",
+                        data: {
+                            id: topicId,
+                            auditResult: true,
+                            auditRemark: ""
+                        },
+                        success: function(result) {
+                            if (result.code === 200) {
+                                $.modal.msgSuccess("审核通过成功");
+                                $("#bootstrap-table").bootstrapTable('refresh');
+                            } else {
+                                $.modal.msgError(result.msg);
+                            }
+                        },
+                        error: function() {
+                            $.modal.msgError("审核失败，请重试");
+                        }
+                    });
+                });
+            } else {
+                // 驳回审核 - 使用layer弹窗
+                layer.prompt({
+                    title: '请输入驳回原因（可选）',
+                    formType: 2, // 多行文本框
+                    area: ['400px', '200px'],
+                    value: '',
+                    maxlength: 100,
+                    // placeholder: '请输入驳回原因（可选）'
+                }, function(value, index) {
+                    $.ajax({
+                        url: prefix + "/audit",
+                        type: "POST",
+                        data: {
+                            id: topicId,
+                            auditResult: false,
+                            auditRemark: value || ""
+                        },
+                        success: function(result) {
+                            if (result.code === 200) {
+                                $.modal.msgSuccess("驳回成功");
+                                $("#bootstrap-table").bootstrapTable('refresh');
+                                layer.close(index);
+                            } else {
+                                $.modal.msgError(result.msg);
+                            }
+                        },
+                        error: function() {
+                            $.modal.msgError("驳回失败，请重试");
+                        }
+                    });
+                });
+            }
         }
     </script>
 </body>

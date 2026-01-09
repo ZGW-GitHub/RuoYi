@@ -157,13 +157,16 @@ public class TopicInfoController extends BaseController {
         }
     }
 
-    @RequiresPermissions("meeting:topicInfo:edit")
-    @Log(title = "议题", businessType = BusinessType.UPDATE)
-    @PostMapping("/edit")
+    /**
+     * 审核议题
+     */
+    @RequiresPermissions("meeting:topicInfo:audit")
+    @Log(title = "议题审核", businessType = BusinessType.UPDATE)
+    @PostMapping("/audit")
     @ResponseBody
     public AjaxResult audit(@RequestParam(value = "id") Long id,
                       @RequestParam(value = "auditResult") Boolean auditResult,
-                      @RequestParam(value = "auditRemark") String auditRemark) {
+                      @RequestParam(value = "auditRemark", required = false) String auditRemark) {
         return topicInfoService.audit(id, auditResult, auditRemark);
     }
 
