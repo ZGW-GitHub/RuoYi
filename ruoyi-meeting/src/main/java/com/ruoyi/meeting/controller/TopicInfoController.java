@@ -92,6 +92,17 @@ public class TopicInfoController extends BaseController {
     }
 
     /**
+     * 查看议题详情
+     */
+    @RequiresPermissions("meeting:topicInfo:view")
+    @GetMapping("/detail/{id}")
+    public String detail(@PathVariable Long id, ModelMap mmap) {
+        TopicInfo topicInfo = topicInfoService.selectById(id);
+        mmap.put("topicInfo", topicInfo);
+        return prefix + "/detail";
+    }
+
+    /**
      * 修改议题
      */
     @RequiresPermissions("meeting:topicInfo:edit")
