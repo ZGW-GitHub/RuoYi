@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.meeting.mapper.MeetingInfoMapper">
+    
+    <resultMap type="com.ruoyi.meeting.domain.MeetingInfo" id="MeetingInfoResult">
+        <result property="id" column="id"/>
+        <result property="title" column="title"/>
+        <result property="meetingType" column="meeting_type"/>
+        <result property="meetingStatus" column="meeting_status"/>
+        <result property="meetingTime" column="meeting_time"/>
+        <result property="meetingHost" column="meeting_host"/>
+        <result property="participationInfo" column="participation_info"/>
+        <result property="fileInfo" column="file_info"/>
+        <result property="attachmentInfo" column="attachment_info"/>
+        <result property="extInfo" column="ext_info"/>
+        <result property="orderNo" column="order_no"/>
+        <result property="deleted" column="deleted"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="remark" column="remark"/>
+    </resultMap>
+
+    <sql id="selectMeetingInfoVo">
+        select id, title, meeting_type, meeting_status, meeting_time, meeting_host, participation_info, file_info, attachment_info, ext_info, order_no, deleted, create_by, create_time, update_by, update_time, remark from bus_meeting_info
+    </sql>
+
+    <select id="selectMeetingInfoList" parameterType="com.ruoyi.meeting.domain.MeetingInfo" resultMap="MeetingInfoResult">
+        <include refid="selectMeetingInfoVo"/>
+        <where>  
+            <if test="title != null  and title != ''"> and title like concat('%', #{title}, '%')</if>
+            <if test="meetingStatus != null  and meetingStatus != ''"> and meeting_status = #{meetingStatus}</if>
+            <if test="params.beginMeetingTime != null and params.beginMeetingTime != '' and params.endMeetingTime != null and params.endMeetingTime != ''"> and meeting_time between #{params.beginMeetingTime} and #{params.endMeetingTime}</if>
+        </where>
+    </select>
+
+</mapper>
