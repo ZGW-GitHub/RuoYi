@@ -139,7 +139,7 @@ public class TopicInfoServiceImpl implements TopicInfoService {
                 topicInfo.setAttachmentInfo(JSON.toJSONString(attachmentInfoList));
             }
 
-            return 1;
+            return update(topicInfo);
         } catch (Exception e) {
             log.error("新增议题失败: {}", e.getMessage(), e);
             throw new RuntimeException("新增议题失败：" + e.getMessage(), e);
