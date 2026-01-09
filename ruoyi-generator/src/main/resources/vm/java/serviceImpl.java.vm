@@ -2,6 +2,7 @@ package ${packageName}.service.impl;
 
 import cn.hutool.core.util.StrUtil;
 import java.util.List;
+import lombok.extern.slf4j.Slf4j;
 #if($table.tree)
 import java.util.ArrayList;
 import com.ruoyi.common.core.domain.Ztree;
@@ -31,6 +32,7 @@ import javax.annotation.Resource;
  * @author ${author}
  * @date ${datetime}
  */
+@Slf4j
 @Service
 public class ${ClassName}ServiceImpl implements ${ClassName}Service {
 
