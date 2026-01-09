@@ -31,13 +31,13 @@
             </div>
 
             <div class="btn-group-sm" id="toolbar" role="group">
-                <a class="btn btn-success" onclick="$.operate.add()" shiro:hasPermission="meeting:topicInfo:add">
-                    <i class="fa fa-plus"></i> 添加
+                <a class="btn btn-success" onclick="$.operate.add()" shiro:hasPermission="meeting:topicInfo:add" id="addBtn" style="display: none;">
+                    <i class="fa fa-plus"></i> 新建议题
                 </a>
                 <!-- <a class="btn btn-primary single disabled" onclick="$.operate.edit()" shiro:hasPermission="meeting:topicInfo:edit"> -->
                 <!--     <i class="fa fa-edit"></i> 修改 -->
                 <!-- </a> -->
-                <a class="btn btn-danger multiple disabled" onclick="$.operate.removeAll()" shiro:hasPermission="meeting:topicInfo:remove">
+                <a class="btn btn-danger multiple disabled" onclick="$.operate.removeAll()" shiro:hasPermission="meeting:topicInfo:remove" id="removeBtn">
                     <i class="fa fa-remove"></i> 删除
                 </a>
                 <!-- <a class="btn btn-warning" onclick="$.table.exportExcel()" shiro:hasPermission="meeting:topicInfo:export"> -->
@@ -72,6 +72,11 @@
                 $('select[name="topicStatus"]').val(urlTopicStatus);
             }
             
+            // 只有当urlTopicStatus为pending时才显示添加、删除按钮
+            if (urlTopicStatus === 'pending') {
+                $('#addBtn').show();
+            }
+            
             var options = {
                 url: prefix + "/list",
                 createUrl: prefix + "/add",
@@ -104,23 +109,32 @@
                     title: '标题'
                 },
                 {
-                        field: 'orderNo',
-                        title: '序号'
-                    },
+                    field: 'orderNo',
+                    title: '序号',
+                    align: 'center'
+                },
                 {
                     field: 'reportPeople',
-                    title: '汇报人'
+                    title: '汇报人',
+                    align: 'center'
                 },
                 {
                     field: 'reportUnit',
-                    title: '汇报单位'
+                    title: '汇报单位',
+                    align: 'center'
                 },
                 {
-                        field: 'topicStatus',
-                        title: '状态',
-                        formatter: function(value, row, index) {
-                            return $.table.selectDictLabel(topicStatusDatas, value);
-                        }
+                    field: 'topicStatus',
+                    title: '状态',
+                    align: 'center',
+                    formatter: function(value, row, index) {
+                        return $.table.selectDictLabel(topicStatusDatas, value);
+                    }
+                },
+                {
+                    field: 'createTime',
+                    title: '创建时间',
+                    align: 'center'
                 },
                 {
                     title: '操作',
@@ -128,9 +142,12 @@
                     formatter: function(value, row, index) {
                         var actions = [];
                         actions.push('<a class="btn btn-primary btn-xs" href="javascript:void(0)" onclick="$.operate.detail(\'' + row.id + '\')"><i class="fa fa-eye"></i>查看</a> ');
-                        actions.push('<a class="btn btn-success btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="$.operate.edit(\'' + row.id + '\')"><i class="fa fa-edit"></i>编辑</a> ');
+                        if (urlTopicStatus === 'pending') {
+                            actions.push('<a class="btn btn-success btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="$.operate.edit(\'' + row.id + '\')"><i class="fa fa-edit"></i>编辑</a> ');
+                        }
                         actions.push('<a class="btn btn-info btn-xs" href="javascript:void(0)" onclick="downloadTopicFiles(\'' + row.id + '\')"><i class="fa fa-download"></i>下载议题文件</a> ');
                         actions.push('<a class="btn btn-danger btn-xs ' + removeFlag + '" href="javascript:void(0)" onclick="$.operate.remove(\'' + row.id + '\')"><i class="fa fa-remove"></i>删除</a>');
+
                         return actions.join('');
                     }
                 }]
