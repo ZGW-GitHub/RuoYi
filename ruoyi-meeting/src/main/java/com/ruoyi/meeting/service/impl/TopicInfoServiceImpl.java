@@ -2,8 +2,10 @@ package com.ruoyi.meeting.service.impl;
 
 import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson.JSON;
+import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.dto.FileInfo;
 import com.ruoyi.common.dto.FileInfoDTO;
+import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.common.utils.FileDownloadUtil;
 import com.ruoyi.common.utils.FileUploadUtil;
@@ -273,6 +275,19 @@ public class TopicInfoServiceImpl implements TopicInfoService {
         String zipFileName = topicInfo.getTitle() + "_议题文件_" + System.currentTimeMillis() + ".zip";
         List<FileInfoDTO> fileList = allFiles.stream().map(FileInfoDTO::new).collect(Collectors.toList());
         FileDownloadUtil.downloadZip(zipFileName, fileList, response);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public AjaxResult audit(Long id, Boolean auditResult, Boolean auditRemark) {
+        TopicInfo topicInfo = selectById(id);
+        if (topicInfo == null) {
+            throw new ServiceException("议题不存在");
+        }
+
+        topicInfo.setTopicStatus(auditResult ? TopicStatusEnum.APPROVED.getCode() : TopicStatusEnum.REJECTED.getCode());
+        update(topicInfo);
+        return AjaxResult.success();
     }
 
 }

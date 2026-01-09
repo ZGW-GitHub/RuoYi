@@ -1,5 +1,6 @@
 package com.ruoyi.meeting.service;
 
+import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.meeting.domain.TopicInfo;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -77,5 +78,7 @@ public interface TopicInfoService {
      * @param response HTTP响应
      */
     void download(Long id, HttpServletResponse response);
+
+    AjaxResult audit(Long id, Boolean auditResult, Boolean auditRemark);
 
 }

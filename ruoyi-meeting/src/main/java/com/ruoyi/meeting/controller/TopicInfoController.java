@@ -157,4 +157,14 @@ public class TopicInfoController extends BaseController {
         }
     }
 
+    @RequiresPermissions("meeting:topicInfo:edit")
+    @Log(title = "议题", businessType = BusinessType.UPDATE)
+    @PostMapping("/edit")
+    @ResponseBody
+    public AjaxResult audit(@RequestParam(value = "id") Long id,
+                      @RequestParam(value = "auditResult") Boolean auditResult,
+                      @RequestParam(value = "auditRemark") Boolean auditRemark) {
+        return topicInfoService.audit(id, auditResult, auditRemark);
+    }
+
 }
