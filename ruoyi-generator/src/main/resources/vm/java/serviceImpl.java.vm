@@ -1,5 +1,6 @@
 package ${packageName}.service.impl;
 
+import cn.hutool.core.util.StrUtil;
 import java.util.List;
 #if($table.tree)
 import java.util.ArrayList;
@@ -21,7 +22,6 @@ import ${packageName}.domain.${subClassName};
 import ${packageName}.mapper.${ClassName}Mapper;
 import ${packageName}.domain.${ClassName};
 import ${packageName}.service.${ClassName}Service;
-import com.ruoyi.common.core.text.Convert;
 
 import javax.annotation.Resource;
 
@@ -45,7 +45,7 @@ public class ${ClassName}ServiceImpl implements ${ClassName}Service {
      */
     @Override
     public ${ClassName} selectBy${pkColumn.capJavaField}(${pkColumn.javaType} ${pkColumn.javaField}) {
-        return ${className}Mapper.select${ClassName}By${pkColumn.capJavaField}(${pkColumn.javaField});
+        return ${className}Mapper.selectBy${pkColumn.capJavaField}(${pkColumn.javaField});
     }
 
     /**
@@ -80,7 +80,7 @@ public class ${ClassName}ServiceImpl implements ${ClassName}Service {
         insert${subClassName}(${className});
         return rows;
 #else
-        return ${className}Mapper.insert${ClassName}(${className});
+        return ${className}Mapper.insert(${className});
 #end
     }
 
@@ -104,7 +104,7 @@ public class ${ClassName}ServiceImpl implements ${ClassName}Service {
         ${className}Mapper.delete${subClassName}By${subTableFkClassName}(${className}.get${pkColumn.capJavaField}());
         insert${subClassName}(${className});
 #end
-        return ${className}Mapper.update${ClassName}(${className});
+        return ${className}Mapper.updateById(${className});
     }
 
     /**
@@ -121,7 +121,7 @@ public class ${ClassName}ServiceImpl implements ${ClassName}Service {
 #if($table.sub)
         ${className}Mapper.delete${subClassName}By${subTableFkClassName}s(Convert.toStrArray(${pkColumn.javaField}s));
 #end
-        return ${className}Mapper.delete${ClassName}By${pkColumn.capJavaField}s(Convert.toStrArray(${pkColumn.javaField}s));
+        return ${className}Mapper.deleteBatchIds(StrUtil.split(${pkColumn.javaField}s, StrUtil.COMMA));
     }
 
     /**
@@ -138,7 +138,7 @@ public class ${ClassName}ServiceImpl implements ${ClassName}Service {
 #if($table.sub)
         ${className}Mapper.delete${subClassName}By${subTableFkClassName}(${pkColumn.javaField});
 #end
-        return ${className}Mapper.delete${ClassName}By${pkColumn.capJavaField}(${pkColumn.javaField});
+        return ${className}Mapper.deleteById(${pkColumn.javaField});
     }
 #if($table.tree)
 
