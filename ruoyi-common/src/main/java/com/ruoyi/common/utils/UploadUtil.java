@@ -46,7 +46,7 @@ public class UploadUtil {
                 // 生成唯一文件名
                 String originalFilename = file.getOriginalFilename();
                 String extension = FileTypeUtil.getType(file.getInputStream());
-                String fileName = System.currentTimeMillis() + "_" + UUID.randomUUID().toString().substring(0, 8) + extension;
+                String fileName = System.currentTimeMillis() + "_" + UUID.randomUUID().toString().substring(0, 8) + "." + extension;
 
                 // 保存文件
                 File destFile = new File(saveDir, fileName);
@@ -65,6 +65,14 @@ public class UploadUtil {
         }
 
         return fileInfoList;
+    }
+
+    public static void deleteFile(String filePath) {
+        try {
+            FileUtil.del(filePath);
+        } catch (Exception e) {
+            log.error("文件删除异常: {}", e.getMessage(), e);
+        }
     }
 
     public static String getTopicFilePath(Long meetingId) {

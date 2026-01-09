@@ -88,6 +88,12 @@
 
         // 监听文件选择事件
         $('#fileInfo, #attachmentInfo').on('change', function() {
+            if (this.files.length > 6) {
+                $.modal.alertWarning("最多只能选择6个文件");
+                this.value = ''; // 清空文件选择
+                $('#' + this.id + '-list').empty();
+                return;
+            }
             displayFileList(this);
         });
 

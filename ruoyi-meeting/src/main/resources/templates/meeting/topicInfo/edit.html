@@ -105,6 +105,18 @@
 
         // 监听文件选择事件
         $('#fileInfo, #attachmentInfo').on('change', function() {
+            var fieldName = this.id;
+            var existingCount = $('#' + fieldName + '-existing .existing-file-item').length;
+            var newCount = this.files.length;
+            var totalCount = existingCount + newCount;
+            
+            if (totalCount > 6) {
+                $.modal.alertWarning("文件总数不能超过6个，当前已有" + existingCount + "个文件");
+                this.value = ''; // 清空文件选择
+                $('#' + this.id + '-list').empty();
+                return;
+            }
+            
             displayFileList(this);
         });
 

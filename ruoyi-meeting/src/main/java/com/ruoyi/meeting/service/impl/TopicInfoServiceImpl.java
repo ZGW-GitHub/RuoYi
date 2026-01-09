@@ -85,8 +85,12 @@ public class TopicInfoServiceImpl implements TopicInfoService {
      * @return 结果
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public int deleteByIds(String ids) {
-        return topicInfoMapper.deleteBatchIds(StrUtil.split(ids, StrUtil.COMMA));
+        List<String> idList = StrUtil.split(ids, StrUtil.COMMA);
+        topicInfoMapper.deleteBatchIds(idList);
+        idList.forEach(id -> UploadUtil.deleteFile(UploadUtil.getTopicFilePath(Long.valueOf(id))));
+        return 1;
     }
 
     /**
@@ -112,6 +116,14 @@ public class TopicInfoServiceImpl implements TopicInfoService {
     @Transactional(rollbackFor = Exception.class)
     public int insert(TopicInfo topicInfo, MultipartFile[] fileInfoFiles, MultipartFile[] attachmentInfoFiles) {
         try {
+            // 验证文件个数
+            if (fileInfoFiles != null && fileInfoFiles.length > 6) {
+                throw new RuntimeException("议题文件不能超过6个");
+            }
+            if (attachmentInfoFiles != null && attachmentInfoFiles.length > 6) {
+                throw new RuntimeException("附件不能超过6个");
+            }
+            
             insert(topicInfo);
 
             // 处理议题文件
@@ -166,6 +178,11 @@ public class TopicInfoServiceImpl implements TopicInfoService {
                 finalFileInfoList.addAll(newFiles);
             }
 
+            // 验证议题文件总数
+            if (finalFileInfoList.size() > 6) {
+                throw new RuntimeException("议题文件总数不能超过6个");
+            }
+
             if (!finalFileInfoList.isEmpty()) {
                 topicInfo.setFileInfo(JSON.toJSONString(finalFileInfoList));
             } else {
@@ -185,6 +202,11 @@ public class TopicInfoServiceImpl implements TopicInfoService {
             if (attachmentInfoFiles != null && attachmentInfoFiles.length > 0) {
                 List<FileInfo> newAttachments = UploadUtil.saveFile(uploadPath, attachmentInfoFiles);
                 finalAttachmentInfoList.addAll(newAttachments);
+            }
+
+            // 验证附件总数
+            if (finalAttachmentInfoList.size() > 6) {
+                throw new RuntimeException("附件总数不能超过6个");
             }
 
             if (!finalAttachmentInfoList.isEmpty()) {
