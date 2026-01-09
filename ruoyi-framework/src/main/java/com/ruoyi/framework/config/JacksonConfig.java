@@ -24,7 +24,7 @@ public class JacksonConfig {
     @Bean
     public MappingJackson2HttpMessageConverter jackson2HttpMessageConverter() {
         final Jackson2ObjectMapperBuilder builder = new Jackson2ObjectMapperBuilder();
-        builder.serializationInclusion(JsonInclude.Include.NON_NULL);
+        builder.serializationInclusion(JsonInclude.Include.ALWAYS);
 
         SimpleModule simpleModule = new SimpleModule();
         simpleModule.addSerializer(Long.class, ToStringSerializer.instance); // Long 转为 String 防止 js 丢失精度
