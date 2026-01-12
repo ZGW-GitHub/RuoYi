@@ -1,5 +1,6 @@
 package com.ruoyi.meeting.service;
 
+import com.ruoyi.meeting.controller.resp.MeetingInfoPageResp;
 import com.ruoyi.meeting.domain.MeetingInfo;
 
 import java.util.List;
@@ -26,7 +27,7 @@ public interface MeetingInfoService {
      * @param meetingInfo 会议信息
      * @return 会议信息集合
      */
-    List<MeetingInfo> selectList(MeetingInfo meetingInfo);
+    List<MeetingInfoPageResp> selectList(MeetingInfo meetingInfo);
 
     /**
      * 新增会议信息
@@ -35,6 +36,15 @@ public interface MeetingInfoService {
      * @return 结果
      */
     int insert(MeetingInfo meetingInfo);
+
+    /**
+     * 新增会议信息并关联议题
+     * 
+     * @param meetingInfo 会议信息
+     * @param selectedTopicIds 选中的议题ID，逗号分隔
+     * @return 结果
+     */
+    int insertWithTopics(MeetingInfo meetingInfo, String selectedTopicIds);
 
     /**
      * 修改会议信息
@@ -59,4 +69,21 @@ public interface MeetingInfoService {
      * @return 结果
      */
     int deleteById(Long id);
+
+    /**
+     * 获取会议关联的议题
+     * 
+     * @param meetingId 会议ID
+     * @return 关联的议题列表
+     */
+    List<Object> getRelatedTopics(Long meetingId);
+
+    /**
+     * 修改会议信息并更新关联议题
+     * 
+     * @param meetingInfo 会议信息
+     * @param selectedTopicIds 选中的议题ID，逗号分隔
+     * @return 结果
+     */
+    int updateWithTopics(MeetingInfo meetingInfo, String selectedTopicIds);
 }

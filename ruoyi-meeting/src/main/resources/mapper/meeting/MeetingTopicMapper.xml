@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.meeting.mapper.MeetingTopicMapper">
+    
+    <resultMap type="MeetingTopic" id="MeetingTopicResult">
+        <result property="id"           column="id"           />
+        <result property="meetingId"    column="meeting_id"   />
+        <result property="topicId"      column="topic_id"     />
+        <result property="extInfo"      column="ext_info"     />
+        <result property="orderNo"      column="order_no"     />
+        <result property="deleted"      column="deleted"      />
+        <result property="createBy"     column="create_by"    />
+        <result property="createTime"   column="create_time"  />
+        <result property="updateBy"     column="update_by"    />
+        <result property="updateTime"   column="update_time"  />
+        <result property="remark"       column="remark"       />
+    </resultMap>
+
+    <sql id="selectMeetingTopicVo">
+        select id, meeting_id, topic_id, ext_info, order_no, deleted, create_by, create_time, update_by, update_time, remark from bus_meeting_topic
+    </sql>
+
+    <select id="selectRelatedTopics" parameterType="Long" resultType="java.util.Map">
+        select t.id, t.title, t.report_people as reportPeople, t.report_unit as reportUnit, mt.order_no as orderNo
+        from bus_meeting_topic mt
+                 left join bus_topic_info t on mt.topic_id = t.id
+        where mt.meeting_id = #{meetingId}
+          and mt.deleted = 0
+          and t.deleted = 0
+        order by mt.order_no, mt.create_time
+    </select>
+
+    <delete id="deleteByMeetingId" parameterType="Long">
+        update bus_meeting_topic set deleted = #{meetingId} where meeting_id = #{meetingId} and deleted = 0
+    </delete>
+
+    <insert id="insertBatch" parameterType="java.util.List">
+        insert into bus_meeting_topic(meeting_id, topic_id, ext_info, order_no, deleted, create_by, create_time, update_by, update_time, remark)
+        values
+        <foreach collection="list" item="item" separator=",">
+            (#{item.meetingId}, #{item.topicId}, #{item.extInfo}, #{item.orderNo}, #{item.deleted}, #{item.createBy}, #{item.createTime}, #{item.updateBy}, #{item.updateTime}, #{item.remark})
+        </foreach>
+    </insert>
+
+</mapper>

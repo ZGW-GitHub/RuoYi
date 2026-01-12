@@ -6,6 +6,7 @@ import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.utils.poi.ExcelUtil;
+import com.ruoyi.meeting.controller.resp.MeetingInfoPageResp;
 import com.ruoyi.meeting.domain.MeetingInfo;
 import com.ruoyi.meeting.service.MeetingInfoService;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
@@ -45,7 +46,7 @@ public class MeetingInfoController extends BaseController {
     @ResponseBody
     public TableDataInfo list(MeetingInfo meetingInfo) {
         startPage();
-        List<MeetingInfo> list = meetingInfoService.selectList(meetingInfo);
+        List<MeetingInfoPageResp> list = meetingInfoService.selectList(meetingInfo);
         return getDataTable(list);
     }
 
@@ -57,8 +58,8 @@ public class MeetingInfoController extends BaseController {
     @PostMapping("/export")
     @ResponseBody
     public AjaxResult export(MeetingInfo meetingInfo) {
-        List<MeetingInfo> list = meetingInfoService.selectList(meetingInfo);
-        ExcelUtil<MeetingInfo> util = new ExcelUtil<>(MeetingInfo.class);
+        List<MeetingInfoPageResp> list = meetingInfoService.selectList(meetingInfo);
+        ExcelUtil<MeetingInfoPageResp> util = new ExcelUtil<>(MeetingInfoPageResp.class);
         return util.exportExcel(list, "会议信息数据");
     }
 
@@ -78,8 +79,13 @@ public class MeetingInfoController extends BaseController {
     @Log(title = "会议信息", businessType = BusinessType.INSERT)
     @PostMapping("/add")
     @ResponseBody
-    public AjaxResult addSave(MeetingInfo meetingInfo) {
-        return toAjax(meetingInfoService.insert(meetingInfo));
+    public AjaxResult addSave(MeetingInfo meetingInfo, @RequestParam(value = "selectedTopicIds", required = false) String selectedTopicIds) {
+        try {
+            return toAjax(meetingInfoService.insertWithTopics(meetingInfo, selectedTopicIds));
+        } catch (Exception e) {
+            logger.error("新增会议信息失败", e);
+            return AjaxResult.error("新增失败：" + e.getMessage());
+        }
     }
 
     /**
@@ -94,14 +100,45 @@ public class MeetingInfoController extends BaseController {
     }
 
     /**
+     * 查看会议关联议题页面
+     */
+    @RequiresPermissions("meeting:meetingInfo:edit")
+    @GetMapping("/relatedTopics/{meetingId}")
+    public String relatedTopics(@PathVariable("meetingId") Long meetingId, ModelMap mmap) {
+        mmap.put("meetingId", meetingId);
+        return prefix + "/relatedTopics";
+    }
+
+    /**
+     * 获取会议关联的议题
+     */
+    @RequiresPermissions("meeting:meetingInfo:edit")
+    @GetMapping("/getRelatedTopics")
+    @ResponseBody
+    public AjaxResult getRelatedTopics(@RequestParam("meetingId") Long meetingId) {
+        try {
+            List<Object> relatedTopics = meetingInfoService.getRelatedTopics(meetingId);
+            return AjaxResult.success(relatedTopics);
+        } catch (Exception e) {
+            logger.error("获取关联议题失败", e);
+            return AjaxResult.error("获取关联议题失败");
+        }
+    }
+
+    /**
      * 修改保存会议信息
      */
     @RequiresPermissions("meeting:meetingInfo:edit")
     @Log(title = "会议信息", businessType = BusinessType.UPDATE)
     @PostMapping("/edit")
     @ResponseBody
-    public AjaxResult editSave(MeetingInfo meetingInfo) {
-        return toAjax(meetingInfoService.update(meetingInfo));
+    public AjaxResult editSave(MeetingInfo meetingInfo, @RequestParam(value = "selectedTopicIds", required = false) String selectedTopicIds) {
+        try {
+            return toAjax(meetingInfoService.updateWithTopics(meetingInfo, selectedTopicIds));
+        } catch (Exception e) {
+            logger.error("更新会议信息失败", e);
+            return AjaxResult.error("更新失败：" + e.getMessage());
+        }
     }
 
     /**

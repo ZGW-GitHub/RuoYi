@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:include="include :: header('会议关联议题')" />
+</head>
+<body class="gray-bg">
+    <div class="container-div">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h4 class="panel-title">
+                            <i class="fa fa-list"></i> 关联议题列表
+                            <span class="pull-right">
+                                <small class="text-muted">按议题顺序排列</small>
+                            </span>
+                        </h4>
+                    </div>
+                    <div class="panel-body">
+                        <div id="relatedTopicsList" class="related-topics-list">
+                            <!-- 议题列表将通过AJAX加载 -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <th:block th:include="include :: footer" />
+    <style>
+        .topic-card {
+            border: 1px solid #e7eaec;
+            border-radius: 4px;
+            margin-bottom: 10px;
+            padding: 15px;
+            background: #fff;
+            transition: all 0.3s ease;
+        }
+        .topic-card:hover {
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border-color: #1ab394;
+        }
+        .topic-order {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            line-height: 30px;
+            text-align: center;
+            background: #1ab394;
+            color: white;
+            border-radius: 50%;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        .topic-title {
+            font-size: 16px;
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 8px;
+        }
+        .topic-meta {
+            color: #999;
+            font-size: 13px;
+        }
+        .topic-meta .meta-item {
+            margin-right: 15px;
+        }
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+        }
+        .loading-state {
+            text-align: center;
+            padding: 40px;
+        }
+    </style>
+    <script th:inline="javascript">
+        // 使用字符串形式传递meetingId，避免精度丢失
+        var meetingId = /*[[${meetingId}]]*/ '';
+        var prefix = ctx + "meeting/meetingInfo";
+
+        $(function() {
+            loadRelatedTopics();
+        });
+
+        // 加载关联议题
+        function loadRelatedTopics() {
+            $('#relatedTopicsList').html('<div class="loading-state"><i class="fa fa-spinner fa-spin"></i> 加载中...</div>');
+            
+            $.ajax({
+                url: prefix + "/getRelatedTopics",
+                type: "GET",
+                data: { meetingId: meetingId },
+                success: function(result) {
+                    if (result.code === 0) {
+                        renderTopicsList(result.data || []);
+                    } else {
+                        $('#relatedTopicsList').html('<div class="empty-state"><i class="fa fa-exclamation-triangle"></i><br>加载失败：' + result.msg + '</div>');
+                    }
+                },
+                error: function() {
+                    $('#relatedTopicsList').html('<div class="empty-state"><i class="fa fa-exclamation-triangle"></i><br>加载失败，请重试</div>');
+                }
+            });
+        }
+
+        // 渲染议题列表
+        function renderTopicsList(topics) {
+            if (topics.length === 0) {
+                $('#relatedTopicsList').html('<div class="empty-state"><i class="fa fa-info-circle"></i><br>暂无关联议题</div>');
+                return;
+            }
+
+            var html = '';
+            topics.forEach(function(topic, index) {
+                html += '<div class="topic-card">' +
+                       '<div class="topic-header">' +
+                       '<span class="topic-order">' + (topic.orderNo || (index + 1)) + '</span>' +
+                       '<span class="topic-title">' + topic.title + '</span>' +
+                       '</div>' +
+                       '<div class="topic-meta">' +
+                       '<span class="meta-item"><i class="fa fa-user"></i> 汇报人：' + (topic.reportPeople || '未设置') + '</span>' +
+                       '<span class="meta-item"><i class="fa fa-building"></i> 汇报单位：' + (topic.reportUnit || '未设置') + '</span>' +
+                       '</div>' +
+                       '</div>';
+            });
+            
+            $('#relatedTopicsList').html(html);
+        }
+    </script>
+</body>
+</html>

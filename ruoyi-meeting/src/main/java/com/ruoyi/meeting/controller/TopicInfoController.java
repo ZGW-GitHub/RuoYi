@@ -159,6 +159,15 @@ public class TopicInfoController extends BaseController {
     }
 
     /**
+     * 议题选择器页面
+     */
+    @RequiresPermissions("meeting:topicInfo")
+    @GetMapping("/selector")
+    public String selector() {
+        return prefix + "/selector";
+    }
+
+    /**
      * 审核议题
      */
     @RequiresPermissions("meeting:topicInfo:audit")

@@ -28,15 +28,26 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         select id, title, meeting_type, meeting_status, meeting_time, meeting_host, participation_info, file_info, attachment_info, ext_info, order_no, deleted, create_by, create_time, update_by, update_time, remark from bus_meeting_info
     </sql>
 
-    <select id="selectMeetingInfoList" parameterType="com.ruoyi.meeting.domain.MeetingInfo" resultMap="MeetingInfoResult">
-        <include refid="selectMeetingInfoVo"/>
+    <select id="selectMeetingInfoList" parameterType="com.ruoyi.meeting.domain.MeetingInfo" resultType="com.ruoyi.meeting.controller.resp.MeetingInfoPageResp">
+        select 
+            m.id, m.title, m.meeting_type, m.meeting_status, m.meeting_time, m.meeting_host, 
+            m.participation_info, m.file_info, m.attachment_info, m.ext_info, m.order_no, 
+            m.deleted, m.create_by, m.create_time, m.update_by, m.update_time, m.remark,
+            COALESCE(t.topic_count, 0) as topic_count
+        from bus_meeting_info m
+        left join (
+            select meeting_id, count(*) as topic_count 
+            from bus_meeting_topic 
+            where deleted = 0 
+            group by meeting_id
+        ) t on m.id = t.meeting_id
         <where>
-            deleted = 0
-            <if test="title != null  and title != ''"> and title like concat('%', #{title}, '%')</if>
-            <if test="meetingStatus != null  and meetingStatus != ''"> and meeting_status = #{meetingStatus}</if>
-            <if test="params.beginMeetingTime != null and params.beginMeetingTime != '' and params.endMeetingTime != null and params.endMeetingTime != ''"> and meeting_time between #{params.beginMeetingTime} and #{params.endMeetingTime}</if>
-            order by meeting_time
+            m.deleted = 0
+            <if test="title != null  and title != ''"> and m.title like concat('%', #{title}, '%')</if>
+            <if test="meetingStatus != null  and meetingStatus != ''"> and m.meeting_status = #{meetingStatus}</if>
+            <if test="params.beginMeetingTime != null and params.beginMeetingTime != '' and params.endMeetingTime != null and params.endMeetingTime != ''"> and m.meeting_time between #{params.beginMeetingTime} and #{params.endMeetingTime}</if>
         </where>
+        order by m.meeting_time
     </select>
 
 </mapper>

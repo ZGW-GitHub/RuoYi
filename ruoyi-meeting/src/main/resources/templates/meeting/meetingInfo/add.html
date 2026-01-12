@@ -3,6 +3,25 @@
 <head>
     <th:block th:include="include :: header('新增会议信息')" />
     <th:block th:include="include :: datetimepicker-css" />
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+    <style>
+        .sortable-ghost {
+            opacity: 0.4;
+        }
+        .sortable-chosen {
+            background: #e3f2fd !important;
+        }
+        .sortable-drag {
+            background: #fff !important;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15) !important;
+        }
+        .topic-item:hover {
+            background: #e8f4fd !important;
+        }
+        .drag-handle:hover {
+            color: #333 !important;
+        }
+    </style>
 </head>
 <body class="white-bg">
     <div class="wrapper wrapper-content animated fadeInRight ibox-content">
@@ -51,19 +70,48 @@
                     </div>
                 </div>
             </div>
+            <div class="col-xs-12">
+                <div class="form-group">
+                    <label class="col-sm-3 control-label">关联议题：</label>
+                    <div class="col-sm-8">
+                        <div class="input-group">
+                            <input type="text" id="selectedTopicsDisplay" class="form-control" readonly placeholder="点击选择关联议题">
+                            <span class="input-group-btn">
+                                <button type="button" class="btn btn-primary" onclick="openTopicSelector()">
+                                    <i class="fa fa-search"></i> 选择议题
+                                </button>
+                            </span>
+                        </div>
+                        <input type="hidden" id="selectedTopicIds" name="selectedTopicIds" value="">
+                        <div id="selectedTopicsList" class="mt-2">
+                            <div class="selected-topics-container" style="min-height: 40px; border: 1px dashed #ddd; border-radius: 4px; padding: 8px;">
+                                <div class="empty-tip text-muted" style="text-align: center; padding: 10px;">暂无关联议题，点击上方按钮选择</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </form>
     </div>
     <th:block th:include="include :: footer" />
     <th:block th:include="include :: datetimepicker-js" />
     <script th:inline="javascript">
-        var prefix = ctx + "meeting/meetingInfo"
+        var prefix = ctx + "meeting/meetingInfo";
+        var selectedTopics = []; // 存储已选择的议题
+        
         $("#form-meetingInfo-add").validate({
             focusCleanup: true
         });
 
         function submitHandler() {
             if ($.validate.form()) {
-                $.operate.save(prefix + "/add", $('#form-meetingInfo-add').serialize());
+                // 将选中的议题ID添加到表单数据中
+                var formData = $('#form-meetingInfo-add').serialize();
+                if (selectedTopics.length > 0) {
+                    var topicIds = selectedTopics.map(function(topic) { return topic.id; }).join(',');
+                    formData += '&selectedTopicIds=' + encodeURIComponent(topicIds);
+                }
+                $.operate.save(prefix + "/add", formData);
             }
         }
 
@@ -73,6 +121,98 @@
             autoclose: true,
             todayBtn: true
         });
+
+        // 打开议题选择器
+        function openTopicSelector() {
+            var index = layer.open({
+                type: 2,
+                title: '选择关联议题',
+                shadeClose: true,
+                shade: 0.8,
+                area: ['80%', '70%'],
+                content: ctx + 'meeting/topicInfo/selector',
+                btn: ['确定', '取消'],
+                yes: function(index, layero) {
+                    // 获取选中的议题
+                    var iframeWin = window[layero.find('iframe')[0]['name']];
+                    var selectedData = iframeWin.getSelectedTopics();
+                    if (selectedData && selectedData.length > 0) {
+                        selectedTopics = selectedData;
+                        updateSelectedTopicsDisplay();
+                    }
+                    layer.close(index);
+                },
+                cancel: function(index) {
+                    layer.close(index);
+                }
+            });
+        }
+
+        // 更新已选择议题的显示
+        function updateSelectedTopicsDisplay() {
+            var displayText = selectedTopics.map(function(topic) { return topic.title; }).join(', ');
+            $('#selectedTopicsDisplay').val(displayText);
+            
+            var container = $('#selectedTopicsList .selected-topics-container');
+            if (selectedTopics.length === 0) {
+                container.html('<div class="empty-tip text-muted" style="text-align: center; padding: 10px;">暂无关联议题，点击上方按钮选择</div>');
+            } else {
+                var listHtml = '';
+                selectedTopics.forEach(function(topic, index) {
+                    listHtml += '<div class="topic-item" data-index="' + index + '" style="display: inline-block; margin: 3px; padding: 5px 10px; background: #f0f9ff; border: 1px solid #b3d8ff; border-radius: 4px; cursor: move; position: relative;">' +
+                               '<span class="drag-handle" style="margin-right: 5px; color: #999; cursor: move;">⋮⋮</span>' +
+                               '<span class="topic-title">' + topic.title + '</span>' +
+                               '<span class="order-number" style="margin-left: 5px; color: #666; font-size: 12px;">#' + (index + 1) + '</span>' +
+                               '<i class="fa fa-times remove-topic" data-index="' + index + '" style="margin-left: 8px; cursor: pointer; color: #999;" title="移除"></i>' +
+                               '</div>';
+                });
+                container.html(listHtml);
+                
+                // 绑定移除事件
+                container.find('.remove-topic').click(function() {
+                    var index = $(this).data('index');
+                    removeSelectedTopic(index);
+                });
+                
+                // 初始化拖拽排序
+                initSortable();
+            }
+            
+            // 更新隐藏字段
+            var topicIds = selectedTopics.map(function(topic) { return topic.id; }).join(',');
+            $('#selectedTopicIds').val(topicIds);
+        }
+
+        // 初始化拖拽排序
+        function initSortable() {
+            var container = document.querySelector('#selectedTopicsList .selected-topics-container');
+            if (container && typeof Sortable !== 'undefined') {
+                Sortable.create(container, {
+                    animation: 150,
+                    ghostClass: 'sortable-ghost',
+                    chosenClass: 'sortable-chosen',
+                    dragClass: 'sortable-drag',
+                    handle: '.drag-handle',
+                    onEnd: function(evt) {
+                        // 更新数组顺序
+                        var oldIndex = evt.oldIndex;
+                        var newIndex = evt.newIndex;
+                        
+                        if (oldIndex !== newIndex) {
+                            var movedItem = selectedTopics.splice(oldIndex, 1)[0];
+                            selectedTopics.splice(newIndex, 0, movedItem);
+                            updateSelectedTopicsDisplay();
+                        }
+                    }
+                });
+            }
+        }
+
+        // 移除已选择的议题
+        function removeSelectedTopic(index) {
+            selectedTopics.splice(index, 1);
+            updateSelectedTopicsDisplay();
+        }
     </script>
 </body>
 </html>
