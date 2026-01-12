@@ -10,6 +10,7 @@ import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.common.utils.FileDownloadUtil;
 import com.ruoyi.common.utils.FileUploadUtil;
+import com.ruoyi.meeting.controller.resp.TopicInfoDetailResp;
 import com.ruoyi.meeting.domain.MeetingExtInfoDTO;
 import com.ruoyi.meeting.domain.TopicInfo;
 import com.ruoyi.meeting.enums.TopicStatusEnum;
@@ -50,8 +51,8 @@ public class TopicInfoServiceImpl implements TopicInfoService {
      * @return 议题
      */
     @Override
-    public TopicInfo selectById(Long id) {
-        return topicInfoMapper.selectById(id);
+    public TopicInfoDetailResp detail(Long id) {
+        return new TopicInfoDetailResp(topicInfoMapper.selectById(id));
     }
 
     /**
@@ -242,7 +243,7 @@ public class TopicInfoServiceImpl implements TopicInfoService {
     @Override
     public void download(Long id, HttpServletResponse response) {
         // 查询议题信息
-        TopicInfo topicInfo = selectById(id);
+        TopicInfo topicInfo = topicInfoMapper.selectById(id);
         if (topicInfo == null) {
             throw new RuntimeException("议题不存在");
         }
@@ -282,7 +283,7 @@ public class TopicInfoServiceImpl implements TopicInfoService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public AjaxResult audit(Long id, Boolean auditResult, String auditRemark) {
-        TopicInfo topicInfo = selectById(id);
+        TopicInfo topicInfo = topicInfoMapper.selectById(id);
         if (topicInfo == null) {
             throw new ServiceException("议题不存在");
         }

@@ -6,6 +6,7 @@ import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.utils.poi.ExcelUtil;
+import com.ruoyi.meeting.controller.resp.TopicInfoDetailResp;
 import com.ruoyi.meeting.domain.TopicInfo;
 import com.ruoyi.meeting.service.TopicInfoService;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
@@ -97,7 +98,7 @@ public class TopicInfoController extends BaseController {
     @RequiresPermissions("meeting:topicInfo:view")
     @GetMapping("/detail/{id}")
     public String detail(@PathVariable Long id, ModelMap mmap) {
-        TopicInfo topicInfo = topicInfoService.selectById(id);
+        TopicInfoDetailResp topicInfo = topicInfoService.detail(id);
         mmap.put("topicInfo", topicInfo);
         return prefix + "/detail";
     }
@@ -108,7 +109,7 @@ public class TopicInfoController extends BaseController {
     @RequiresPermissions("meeting:topicInfo:edit")
     @GetMapping("/edit/{id}")
     public String edit(@PathVariable Long id, ModelMap mmap) {
-        TopicInfo topicInfo = topicInfoService.selectById(id);
+        TopicInfoDetailResp topicInfo = topicInfoService.detail(id);
         mmap.put("topicInfo", topicInfo);
         return prefix + "/edit";
     }

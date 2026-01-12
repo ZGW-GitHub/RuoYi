@@ -1,6 +1,7 @@
 package com.ruoyi.meeting.service;
 
 import com.ruoyi.common.core.domain.AjaxResult;
+import com.ruoyi.meeting.controller.resp.TopicInfoDetailResp;
 import com.ruoyi.meeting.domain.TopicInfo;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -21,7 +22,7 @@ public interface TopicInfoService {
      * @param id 议题主键
      * @return 议题
      */
-    TopicInfo selectById(Long id);
+    TopicInfoDetailResp detail(Long id);
 
     /**
      * 查询议题列表
