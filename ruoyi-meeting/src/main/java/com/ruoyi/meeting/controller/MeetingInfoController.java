@@ -104,7 +104,8 @@ public class MeetingInfoController extends BaseController {
      */
     @RequiresPermissions("meeting:meetingInfo:edit")
     @GetMapping("/relatedTopics/{meetingId}")
-    public String relatedTopics(@PathVariable("meetingId") Long meetingId, ModelMap mmap) {
+    public String relatedTopics(@PathVariable("meetingId") String meetingId, ModelMap mmap) {
+        // 将meetingId作为字符串传递给前端，避免JavaScript精度丢失
         mmap.put("meetingId", meetingId);
         return prefix + "/relatedTopics";
     }
@@ -115,10 +116,15 @@ public class MeetingInfoController extends BaseController {
     @RequiresPermissions("meeting:meetingInfo:edit")
     @GetMapping("/getRelatedTopics")
     @ResponseBody
-    public AjaxResult getRelatedTopics(@RequestParam("meetingId") Long meetingId) {
+    public AjaxResult getRelatedTopics(@RequestParam("meetingId") String meetingIdStr) {
         try {
+            // 将字符串转换为Long，避免前端传递时的精度丢失
+            Long meetingId = Long.valueOf(meetingIdStr);
             List<Object> relatedTopics = meetingInfoService.getRelatedTopics(meetingId);
             return AjaxResult.success(relatedTopics);
+        } catch (NumberFormatException e) {
+            logger.error("meetingId格式错误: " + meetingIdStr, e);
+            return AjaxResult.error("会议ID格式错误");
         } catch (Exception e) {
             logger.error("获取关联议题失败", e);
             return AjaxResult.error("获取关联议题失败");

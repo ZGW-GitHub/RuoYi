@@ -137,13 +137,15 @@
 
         // 查看关联议题
         function viewRelatedTopics(meetingId, meetingTitle) {
+            // 确保meetingId作为字符串处理，避免精度丢失
+            var meetingIdStr = String(meetingId);
             var index = layer.open({
                 type: 2,
                 title: '会议关联议题 - ' + meetingTitle,
                 shadeClose: true,
                 shade: 0.8,
                 area: ['80%', '70%'],
-                content: prefix + "/relatedTopics/" + meetingId,
+                content: prefix + "/relatedTopics/" + meetingIdStr,
                 btn: ['关闭'],
                 yes: function(index) {
                     layer.close(index);
