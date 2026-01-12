@@ -20,7 +20,7 @@
                     <label class="col-sm-3 control-label is-required">会议时间：</label>
                     <div class="col-sm-8">
                         <div class="input-group date">
-                            <input name="meetingTime" class="form-control" placeholder="yyyy-MM-dd" type="text" required>
+                            <input name="meetingTime" class="form-control" placeholder="yyyy-MM-dd HH:mm" type="text" required>
                             <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
                         </div>
                     </div>
@@ -42,6 +42,15 @@
                     </div>
                 </div>
             </div>
+            <div class="col-xs-12">
+                <div class="form-group">
+                    <label class="col-sm-3 control-label">参会情况：</label>
+                    <div class="col-sm-8">
+                        <textarea name="participationInfo" class="form-control" rows="3" maxlength="200"></textarea>
+                        <small class="text-muted">最多输入200个字符</small>
+                    </div>
+                </div>
+            </div>
         </form>
     </div>
     <th:block th:include="include :: footer" />
@@ -59,9 +68,10 @@
         }
 
         $("input[name='meetingTime']").datetimepicker({
-            format: "yyyy-mm-dd",
-            minView: "month",
-            autoclose: true
+            format: "yyyy-mm-dd hh:ii",
+            minView: "hour",
+            autoclose: true,
+            todayBtn: true
         });
     </script>
 </body>

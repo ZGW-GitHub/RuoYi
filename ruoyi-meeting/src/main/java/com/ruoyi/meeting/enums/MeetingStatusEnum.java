@@ -8,9 +8,10 @@ import lombok.Getter;
  */
 @Getter
 @AllArgsConstructor
-public enum TopicTypeEnum {
+public enum MeetingStatusEnum {
 
-    COMMON("common", "通用");
+    CREATED("created", "未开始"),
+    FINISHED("finished", "已完成");
 
     private final String code;
     private final String desc;

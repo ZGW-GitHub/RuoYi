@@ -8,7 +8,7 @@ import lombok.Getter;
  */
 @Getter
 @AllArgsConstructor
-public enum TopicTypeEnum {
+public enum MeetingTypeEnum {
 
     COMMON("common", "通用");
 

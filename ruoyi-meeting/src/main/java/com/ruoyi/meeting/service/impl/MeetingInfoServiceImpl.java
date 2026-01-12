@@ -2,6 +2,8 @@ package com.ruoyi.meeting.service.impl;
 
 import cn.hutool.core.util.StrUtil;
 import com.ruoyi.meeting.domain.MeetingInfo;
+import com.ruoyi.meeting.enums.MeetingStatusEnum;
+import com.ruoyi.meeting.enums.MeetingTypeEnum;
 import com.ruoyi.meeting.mapper.MeetingInfoMapper;
 import com.ruoyi.meeting.service.MeetingInfoService;
 import lombok.extern.slf4j.Slf4j;
@@ -53,6 +55,8 @@ public class MeetingInfoServiceImpl implements MeetingInfoService {
      */
     @Override
     public int insert(MeetingInfo meetingInfo) {
+        meetingInfo.setMeetingType(MeetingTypeEnum.COMMON.getCode());
+        meetingInfo.setMeetingStatus(MeetingStatusEnum.CREATED.getCode());
         return meetingInfoMapper.insert(meetingInfo);
     }
 
