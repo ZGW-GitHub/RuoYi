@@ -1,6 +1,7 @@
 package com.ruoyi.meeting.domain;
 
 import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.ruoyi.common.annotation.Excel;
 import com.ruoyi.common.core.domain.BaseEntity;
@@ -57,6 +58,7 @@ public class TopicInfo extends BaseEntity {
     private Long orderNo;
 
     /** 删除标志（0代表存在） */
+    @TableLogic(value = "0", delval = "id")
     private Long deleted;
 
 }
