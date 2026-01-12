@@ -34,7 +34,7 @@ public class TopicInfoController extends BaseController {
     @Resource
     private TopicInfoService topicInfoService;
 
-    @RequiresPermissions("meeting:topicInfo:view")
+    @RequiresPermissions("meeting:topicInfo")
     @GetMapping()
     public String topicInfo() {
         return prefix + "/topicInfo";
@@ -43,7 +43,7 @@ public class TopicInfoController extends BaseController {
     /**
      * 查询议题列表
      */
-    @RequiresPermissions("meeting:topicInfo:list")
+    @RequiresPermissions("meeting:topicInfo")
     @PostMapping("/list")
     @ResponseBody
     public TableDataInfo list(TopicInfo topicInfo) {
@@ -55,7 +55,7 @@ public class TopicInfoController extends BaseController {
     /**
      * 导出议题列表
      */
-    @RequiresPermissions("meeting:topicInfo:export")
+    @RequiresPermissions("meeting:topicInfo")
     @Log(title = "议题", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     @ResponseBody
@@ -68,7 +68,7 @@ public class TopicInfoController extends BaseController {
     /**
      * 新增议题
      */
-    @RequiresPermissions("meeting:topicInfo:add")
+    @RequiresPermissions("meeting:topicInfo")
     @GetMapping("/add")
     public String add() {
         return prefix + "/add";
@@ -77,7 +77,7 @@ public class TopicInfoController extends BaseController {
     /**
      * 新增保存议题
      */
-    @RequiresPermissions("meeting:topicInfo:add")
+    @RequiresPermissions("meeting:topicInfo")
     @Log(title = "议题", businessType = BusinessType.INSERT)
     @PostMapping("/add")
     @ResponseBody
@@ -95,7 +95,7 @@ public class TopicInfoController extends BaseController {
     /**
      * 查看议题详情
      */
-    @RequiresPermissions("meeting:topicInfo:view")
+    @RequiresPermissions("meeting:topicInfo")
     @GetMapping("/detail/{id}")
     public String detail(@PathVariable Long id, ModelMap mmap) {
         TopicInfoDetailResp topicInfo = topicInfoService.detail(id);
@@ -106,7 +106,7 @@ public class TopicInfoController extends BaseController {
     /**
      * 修改议题
      */
-    @RequiresPermissions("meeting:topicInfo:edit")
+    @RequiresPermissions("meeting:topicInfo")
     @GetMapping("/edit/{id}")
     public String edit(@PathVariable Long id, ModelMap mmap) {
         TopicInfoDetailResp topicInfo = topicInfoService.detail(id);
@@ -117,7 +117,7 @@ public class TopicInfoController extends BaseController {
     /**
      * 修改保存议题
      */
-    @RequiresPermissions("meeting:topicInfo:edit")
+    @RequiresPermissions("meeting:topicInfo")
     @Log(title = "议题", businessType = BusinessType.UPDATE)
     @PostMapping("/edit")
     @ResponseBody
@@ -137,7 +137,7 @@ public class TopicInfoController extends BaseController {
     /**
      * 删除议题
      */
-    @RequiresPermissions("meeting:topicInfo:remove")
+    @RequiresPermissions("meeting:topicInfo")
     @Log(title = "议题", businessType = BusinessType.DELETE)
     @PostMapping( "/remove")
     @ResponseBody
@@ -148,7 +148,7 @@ public class TopicInfoController extends BaseController {
     /**
      * 下载议题文件
      */
-    @RequiresPermissions("meeting:topicInfo:view")
+    @RequiresPermissions("meeting:topicInfo")
     @GetMapping("/download/{id}")
     public void download(@PathVariable Long id, HttpServletResponse response) {
         try {

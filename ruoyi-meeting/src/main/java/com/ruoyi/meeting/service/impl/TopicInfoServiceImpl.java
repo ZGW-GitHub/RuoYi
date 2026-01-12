@@ -4,12 +4,13 @@ import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
 import com.alibaba.fastjson.JSON;
 import com.ruoyi.common.core.domain.AjaxResult;
+import com.ruoyi.common.core.domain.entity.SysUser;
 import com.ruoyi.common.dto.FileInfo;
 import com.ruoyi.common.dto.FileInfoDTO;
 import com.ruoyi.common.exception.ServiceException;
-import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.common.utils.FileDownloadUtil;
 import com.ruoyi.common.utils.FileUploadUtil;
+import com.ruoyi.common.utils.ShiroUtils;
 import com.ruoyi.meeting.controller.resp.TopicInfoDetailResp;
 import com.ruoyi.meeting.domain.MeetingExtInfoDTO;
 import com.ruoyi.meeting.domain.TopicInfo;
@@ -17,6 +18,7 @@ import com.ruoyi.meeting.enums.TopicStatusEnum;
 import com.ruoyi.meeting.enums.TopicTypeEnum;
 import com.ruoyi.meeting.mapper.TopicInfoMapper;
 import com.ruoyi.meeting.service.TopicInfoService;
+import com.ruoyi.meeting.utils.AuditUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -63,6 +65,10 @@ public class TopicInfoServiceImpl implements TopicInfoService {
      */
     @Override
     public List<TopicInfo> selectList(TopicInfo topicInfo) {
+        SysUser sysUser = ShiroUtils.getSysUser();
+        if (!AuditUtil.hasAuditPermission(sysUser.getRoles())) {
+            topicInfo.setCreateBy(sysUser.getLoginName());
+        }
         return topicInfoMapper.selectTopicInfoList(topicInfo);
     }
 
@@ -75,7 +81,6 @@ public class TopicInfoServiceImpl implements TopicInfoService {
     private int insert(TopicInfo topicInfo) {
         topicInfo.setTopicStatus(TopicStatusEnum.PENDING.getCode());
         topicInfo.setTopicType(TopicTypeEnum.COMMON.getCode());
-        topicInfo.setCreateTime(DateUtils.getNowDate());
         return topicInfoMapper.insert(topicInfo);
     }
 
@@ -86,7 +91,6 @@ public class TopicInfoServiceImpl implements TopicInfoService {
      * @return 结果
      */
     private int update(TopicInfo topicInfo) {
-        topicInfo.setUpdateTime(DateUtils.getNowDate());
         return topicInfoMapper.updateById(topicInfo);
     }
 
@@ -136,7 +140,7 @@ public class TopicInfoServiceImpl implements TopicInfoService {
                 throw new RuntimeException("附件不能超过6个");
             }
 
-            insert(topicInfo);
+            int ignore = insert(topicInfo);
 
             // 处理议题文件
             String uploadPath = FileUploadUtil.getTopicFilePath(topicInfo.getId());

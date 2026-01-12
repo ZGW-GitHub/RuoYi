@@ -1,7 +1,6 @@
 package com.ruoyi.meeting.service.impl;
 
 import cn.hutool.core.util.StrUtil;
-import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.meeting.domain.MeetingInfo;
 import com.ruoyi.meeting.mapper.MeetingInfoMapper;
 import com.ruoyi.meeting.service.MeetingInfoService;
@@ -54,7 +53,6 @@ public class MeetingInfoServiceImpl implements MeetingInfoService {
      */
     @Override
     public int insert(MeetingInfo meetingInfo) {
-        meetingInfo.setCreateTime(DateUtils.getNowDate());
         return meetingInfoMapper.insert(meetingInfo);
     }
 
@@ -66,7 +64,6 @@ public class MeetingInfoServiceImpl implements MeetingInfoService {
      */
     @Override
     public int update(MeetingInfo meetingInfo) {
-        meetingInfo.setUpdateTime(DateUtils.getNowDate());
         return meetingInfoMapper.updateById(meetingInfo);
     }
 

@@ -32,6 +32,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <where>  
             <if test="title != null  and title != ''"> and title like concat('%', #{title}, '%')</if>
             <if test="topicStatus != null  and topicStatus != ''"> and topic_status = #{topicStatus}</if>
+            <if test="createBy != null and createBy != ''"> and create_by = #{createBy}</if>
         </where>
     </select>
 
