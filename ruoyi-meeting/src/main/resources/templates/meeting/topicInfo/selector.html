@@ -2,29 +2,7 @@
 <html lang="zh" xmlns:th="http://www.thymeleaf.org">
 <head>
     <th:block th:include="include :: header('选择议题')" />
-    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
     <style>
-        .sortable-ghost {
-            opacity: 0.4;
-        }
-        .sortable-chosen {
-            background: #e3f2fd !important;
-        }
-        .sortable-drag {
-            background: #fff !important;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.15) !important;
-        }
-        .topic-item:hover {
-            background: #e8f4fd !important;
-        }
-        .drag-handle:hover {
-            color: #333 !important;
-        }
-        .selected-topics-container {
-            border: 1px dashed #ddd; 
-            border-radius: 4px; 
-            padding: 8px;
-        }
     </style>
 </head>
 <body class="gray-bg">
@@ -55,22 +33,7 @@
                 <table id="bootstrap-table"></table>
             </div>
             
-            <!-- 已选择议题预览区域 -->
-            <div class="col-sm-12" style="margin-top: 15px;">
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h4 class="panel-title">已选择议题 (<span id="selectedCount">0</span>)</h4>
-                    </div>
-                    <div class="panel-body" style="min-height: 60px;">
-                        <div id="selectedTopicsPreview" class="selected-topics-container" style="min-height: 40px;">
-                            <div class="empty-tip text-muted" style="text-align: center; padding: 10px;">暂未选择议题</div>
-                        </div>
-                        <div class="text-muted" style="font-size: 12px; margin-top: 5px;">
-                            <i class="fa fa-info-circle"></i> 可拖拽调整议题顺序
-                        </div>
-                    </div>
-                </div>
-            </div>
+
         </div>
     </div>
     <th:block th:include="include :: footer" />
@@ -139,13 +102,11 @@
                             reportPeople: row.reportPeople,
                             reportUnit: row.reportUnit
                         });
-                        updateSelectedPreview();
                     }
                 },
                 onUncheck: function(row) {
                     // 从选中列表移除
                     selectedTopics = selectedTopics.filter(function(topic) { return topic.id !== row.id; });
-                    updateSelectedPreview();
                 },
                 onCheckAll: function(rows) {
                     // 全选
@@ -160,14 +121,12 @@
                             });
                         }
                     });
-                    updateSelectedPreview();
                 },
                 onUncheckAll: function(rows) {
                     // 取消全选
                     rows.forEach(function(row) {
                         selectedTopics = selectedTopics.filter(function(topic) { return topic.id !== row.id; });
                     });
-                    updateSelectedPreview();
                 }
             };
             $.table.init(options);
@@ -176,69 +135,6 @@
         // 供父页面调用的方法，获取选中的议题
         function getSelectedTopics() {
             return selectedTopics;
-        }
-
-        // 更新已选择议题预览
-        function updateSelectedPreview() {
-            $('#selectedCount').text(selectedTopics.length);
-            
-            var container = $('#selectedTopicsPreview');
-            if (selectedTopics.length === 0) {
-                container.html('<div class="empty-tip text-muted" style="text-align: center; padding: 10px;">暂未选择议题</div>');
-            } else {
-                var listHtml = '';
-                selectedTopics.forEach(function(topic, index) {
-                    listHtml += '<div class="topic-item" data-index="' + index + '" style="display: inline-block; margin: 3px; padding: 5px 10px; background: #f0f9ff; border: 1px solid #b3d8ff; border-radius: 4px; cursor: move; position: relative;">' +
-                               '<span class="drag-handle" style="margin-right: 5px; color: #999; cursor: move;">⋮⋮</span>' +
-                               '<span class="topic-title">' + topic.title + '</span>' +
-                               '<span class="order-number" style="margin-left: 5px; color: #666; font-size: 12px;">#' + (index + 1) + '</span>' +
-                               '<i class="fa fa-times remove-topic" data-index="' + index + '" style="margin-left: 8px; cursor: pointer; color: #999;" title="移除"></i>' +
-                               '</div>';
-                });
-                container.html(listHtml);
-                
-                // 绑定移除事件
-                container.find('.remove-topic').click(function() {
-                    var index = $(this).data('index');
-                    var topicId = selectedTopics[index].id;
-                    
-                    // 从数组中移除
-                    selectedTopics.splice(index, 1);
-                    
-                    // 取消表格中的选中状态
-                    $('#bootstrap-table').bootstrapTable('uncheckBy', {field: 'id', values: [topicId]});
-                    
-                    updateSelectedPreview();
-                });
-                
-                // 初始化拖拽排序
-                initSortablePreview();
-            }
-        }
-
-        // 初始化预览区域的拖拽排序
-        function initSortablePreview() {
-            var container = document.querySelector('#selectedTopicsPreview');
-            if (container && typeof Sortable !== 'undefined') {
-                Sortable.create(container, {
-                    animation: 150,
-                    ghostClass: 'sortable-ghost',
-                    chosenClass: 'sortable-chosen',
-                    dragClass: 'sortable-drag',
-                    handle: '.drag-handle',
-                    onEnd: function(evt) {
-                        // 更新数组顺序
-                        var oldIndex = evt.oldIndex;
-                        var newIndex = evt.newIndex;
-                        
-                        if (oldIndex !== newIndex) {
-                            var movedItem = selectedTopics.splice(oldIndex, 1)[0];
-                            selectedTopics.splice(newIndex, 0, movedItem);
-                            updateSelectedPreview();
-                        }
-                    }
-                });
-            }
         }
     </script>
 </body>
