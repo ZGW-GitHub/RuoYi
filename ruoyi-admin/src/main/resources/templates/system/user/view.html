@@ -103,7 +103,7 @@
                     <div class="form-group">
                         <label class="col-sm-4 control-label">创建时间：</label>
                         <div class="col-sm-8">
-                            <p class="form-control-plaintext" th:text="*{#dates.format(createTime, 'yyyy-MM-dd HH:mm:ss')}"></p>
+                            <p class="form-control-plaintext" th:text="*{#temporals.format(createTime, 'yyyy-MM-dd HH:mm:ss')}"></p>
                         </div>
                     </div>
                 </div>
@@ -121,7 +121,7 @@
                     <div class="form-group">
                         <label class="col-sm-4 control-label">更新时间：</label>
                         <div class="col-sm-8">
-                            <p class="form-control-plaintext" th:text="*{#dates.format(updateTime, 'yyyy-MM-dd HH:mm:ss')}"></p>
+                            <p class="form-control-plaintext" th:text="*{#temporals.format(updateTime, 'yyyy-MM-dd HH:mm:ss')}"></p>
                         </div>
                     </div>
                 </div>

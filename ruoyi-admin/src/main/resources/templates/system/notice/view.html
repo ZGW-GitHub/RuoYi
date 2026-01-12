@@ -11,7 +11,7 @@
                     <div class="mail-tools tooltip-demo m-t-md">
                         <h3 style="text-align: center">[[${notice.noticeTitle}]]</h3>
                         <h5>
-                          <span class="pull-right font-noraml">发送时间：[[${#dates.format(notice.createTime, 'yyyy-MM-dd HH:mm:ss')}]] </span>
+                          <span class="pull-right font-noraml">发送时间：[[${#temporals.format(notice.createTime, 'yyyy-MM-dd HH:mm:ss')}]] </span>
                           <span class="font-noraml">发件人： </span>[[${notice.createBy}]]
                         </h5>
                     </div>
