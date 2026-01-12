@@ -30,10 +30,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
     <select id="selectMeetingInfoList" parameterType="com.ruoyi.meeting.domain.MeetingInfo" resultMap="MeetingInfoResult">
         <include refid="selectMeetingInfoVo"/>
-        <where>  
+        <where>
+            deleted = 0
             <if test="title != null  and title != ''"> and title like concat('%', #{title}, '%')</if>
             <if test="meetingStatus != null  and meetingStatus != ''"> and meeting_status = #{meetingStatus}</if>
             <if test="params.beginMeetingTime != null and params.beginMeetingTime != '' and params.endMeetingTime != null and params.endMeetingTime != ''"> and meeting_time between #{params.beginMeetingTime} and #{params.endMeetingTime}</if>
+            order by meeting_time
         </where>
     </select>
 
