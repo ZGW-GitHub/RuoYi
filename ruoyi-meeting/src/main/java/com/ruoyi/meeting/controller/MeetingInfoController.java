@@ -7,6 +7,7 @@ import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.utils.poi.ExcelUtil;
 import com.ruoyi.meeting.controller.resp.MeetingInfoPageResp;
+import com.ruoyi.meeting.controller.resp.RelatedTopicResp;
 import com.ruoyi.meeting.domain.MeetingInfo;
 import com.ruoyi.meeting.service.MeetingInfoService;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
@@ -81,7 +82,7 @@ public class MeetingInfoController extends BaseController {
     @ResponseBody
     public AjaxResult addSave(MeetingInfo meetingInfo, @RequestParam(value = "selectedTopicIds", required = false) String selectedTopicIds) {
         try {
-            return toAjax(meetingInfoService.insertWithTopics(meetingInfo, selectedTopicIds));
+            return toAjax(meetingInfoService.insert(meetingInfo, selectedTopicIds));
         } catch (Exception e) {
             logger.error("新增会议信息失败", e);
             return AjaxResult.error("新增失败：" + e.getMessage());
@@ -93,7 +94,7 @@ public class MeetingInfoController extends BaseController {
      */
     @RequiresPermissions("meeting:meetingInfo:edit")
     @GetMapping("/edit/{id}")
-    public String edit(@PathVariable("id") Long id, ModelMap mmap) {
+    public String edit(@PathVariable Long id, ModelMap mmap) {
         MeetingInfo meetingInfo = meetingInfoService.selectById(id);
         mmap.put("meetingInfo", meetingInfo);
         return prefix + "/edit";
@@ -104,7 +105,7 @@ public class MeetingInfoController extends BaseController {
      */
     @RequiresPermissions("meeting:meetingInfo:edit")
     @GetMapping("/relatedTopics/{meetingId}")
-    public String relatedTopics(@PathVariable("meetingId") String meetingId, ModelMap mmap) {
+    public String relatedTopics(@PathVariable String meetingId, ModelMap mmap) {
         // 将meetingId作为字符串传递给前端，避免JavaScript精度丢失
         mmap.put("meetingId", meetingId);
         return prefix + "/relatedTopics";
@@ -118,14 +119,10 @@ public class MeetingInfoController extends BaseController {
     @ResponseBody
     public AjaxResult getRelatedTopics(@RequestParam("meetingId") String meetingIdStr) {
         try {
-            // 将字符串转换为Long，避免前端传递时的精度丢失
             Long meetingId = Long.valueOf(meetingIdStr);
-            List<Object> relatedTopics = meetingInfoService.getRelatedTopics(meetingId);
+            List<RelatedTopicResp> relatedTopics = meetingInfoService.getRelatedTopics(meetingId);
             return AjaxResult.success(relatedTopics);
-        } catch (NumberFormatException e) {
-            logger.error("meetingId格式错误: " + meetingIdStr, e);
-            return AjaxResult.error("会议ID格式错误");
-        } catch (Exception e) {
+        }  catch (Exception e) {
             logger.error("获取关联议题失败", e);
             return AjaxResult.error("获取关联议题失败");
         }
@@ -140,7 +137,7 @@ public class MeetingInfoController extends BaseController {
     @ResponseBody
     public AjaxResult editSave(MeetingInfo meetingInfo, @RequestParam(value = "selectedTopicIds", required = false) String selectedTopicIds) {
         try {
-            return toAjax(meetingInfoService.updateWithTopics(meetingInfo, selectedTopicIds));
+            return toAjax(meetingInfoService.update(meetingInfo, selectedTopicIds));
         } catch (Exception e) {
             logger.error("更新会议信息失败", e);
             return AjaxResult.error("更新失败：" + e.getMessage());

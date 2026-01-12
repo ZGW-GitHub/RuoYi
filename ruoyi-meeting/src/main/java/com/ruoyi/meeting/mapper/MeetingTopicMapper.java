@@ -1,12 +1,12 @@
 package com.ruoyi.meeting.mapper;
 
 import com.ruoyi.common.mybatis.BaseMapper;
+import com.ruoyi.meeting.controller.resp.RelatedTopicResp;
 import com.ruoyi.meeting.domain.MeetingTopic;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * 会议议题关联Mapper接口
@@ -23,7 +23,7 @@ public interface MeetingTopicMapper extends BaseMapper<MeetingTopic> {
      * @param meetingId 会议ID
      * @return 关联的议题列表
      */
-    List<Map<String, Object>> selectRelatedTopics(@Param("meetingId") Long meetingId);
+    List<RelatedTopicResp> selectRelatedTopics(@Param("meetingId") Long meetingId);
 
     /**
      * 删除会议的所有议题关联

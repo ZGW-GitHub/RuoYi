@@ -1,5 +1,7 @@
 package com.ruoyi.meeting.domain;
 
+import com.baomidou.mybatisplus.annotation.TableLogic;
+import com.baomidou.mybatisplus.annotation.TableName;
 import com.ruoyi.common.core.domain.BaseEntity;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -11,6 +13,7 @@ import lombok.EqualsAndHashCode;
  * @date 2026-01-12
  */
 @Data
+@TableName("bus_meeting_topic")
 @EqualsAndHashCode(callSuper = true)
 public class MeetingTopic extends BaseEntity {
 
@@ -44,6 +47,7 @@ public class MeetingTopic extends BaseEntity {
     /**
      * 删除标志（0代表存在）
      */
+    @TableLogic(value = "0", delval = "id")
     private Long deleted;
 
 }
