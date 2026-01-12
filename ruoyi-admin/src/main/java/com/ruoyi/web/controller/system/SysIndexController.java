@@ -136,7 +136,8 @@ public class SysIndexController extends BaseController
     {
         mmap.put("version", RuoYiConfig.getVersion());
         // return "main";
-        return "meeting/meetingInfo/meetingInfo";
+        // return "meeting/meetingInfo/meetingInfo";
+        return "meeting/topicInfo/topicInfo";
     }
 
     // content-main class
