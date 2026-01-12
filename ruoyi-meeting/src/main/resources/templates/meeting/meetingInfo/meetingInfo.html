@@ -14,13 +14,13 @@
                                 <label>标题：</label>
                                 <input type="text" name="title"/>
                             </li>
-                            <li>
-                                <label>状态：</label>
-                                <select name="meetingStatus" th:with="type=${@dict.getType('bus_meeting_meeting_status')}">
-                                    <option value="">所有</option>
-                                    <option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}"></option>
-                                </select>
-                            </li>
+                            <!-- <li> -->
+                            <!--     <label>状态：</label> -->
+                            <!--     <select name="meetingStatus" th:with="type=${@dict.getType('bus_meeting_meeting_status')}"> -->
+                            <!--         <option value="">所有</option> -->
+                            <!--         <option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}"></option> -->
+                            <!--     </select> -->
+                            <!-- </li> -->
                             <li class="select-time">
                                 <label>会议时间：</label>
                                 <input type="text" class="time-input" id="startTime" placeholder="开始时间" name="params[beginMeetingTime]"/>
@@ -38,17 +38,17 @@
 
             <div class="btn-group-sm" id="toolbar" role="group">
                 <a class="btn btn-success" onclick="$.operate.add()" shiro:hasPermission="meeting:meetingInfo:add">
-                    <i class="fa fa-plus"></i> 添加
+                    <i class="fa fa-plus"></i> 新建会议
                 </a>
-                <a class="btn btn-primary single disabled" onclick="$.operate.edit()" shiro:hasPermission="meeting:meetingInfo:edit">
-                    <i class="fa fa-edit"></i> 修改
-                </a>
+                <!-- <a class="btn btn-primary single disabled" onclick="$.operate.edit()" shiro:hasPermission="meeting:meetingInfo:edit"> -->
+                <!--     <i class="fa fa-edit"></i> 修改 -->
+                <!-- </a> -->
                 <a class="btn btn-danger multiple disabled" onclick="$.operate.removeAll()" shiro:hasPermission="meeting:meetingInfo:remove">
                     <i class="fa fa-remove"></i> 删除
                 </a>
-                <a class="btn btn-warning" onclick="$.table.exportExcel()" shiro:hasPermission="meeting:meetingInfo:export">
-                    <i class="fa fa-download"></i> 导出
-                </a>
+                <!-- <a class="btn btn-warning" onclick="$.table.exportExcel()" shiro:hasPermission="meeting:meetingInfo:export"> -->
+                <!--     <i class="fa fa-download"></i> 导出 -->
+                <!-- </a> -->
             </div>
             <div class="col-sm-12 select-table table-striped">
                 <table id="bootstrap-table"></table>
@@ -70,7 +70,10 @@
                 updateUrl: prefix + "/edit/{id}",
                 removeUrl: prefix + "/remove",
                 exportUrl: prefix + "/export",
-                modalName: "会议信息",
+                modalName: "会议",
+                showToggle: false,
+                showExport: false,
+                showColumns: false,
                 columns: [{
                     checkbox: true
                 },
