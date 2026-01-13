@@ -16,6 +16,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.validation.Valid;
 import java.util.List;
 
 /**
@@ -80,7 +81,7 @@ public class MeetingInfoController extends BaseController {
     @Log(title = "会议信息", businessType = BusinessType.INSERT)
     @PostMapping("/add")
     @ResponseBody
-    public AjaxResult addSave(MeetingInfo meetingInfo, @RequestParam(value = "selectedTopicIds", required = false) String selectedTopicIds) {
+    public AjaxResult addSave(@Valid MeetingInfo meetingInfo, @RequestParam(value = "selectedTopicIds", required = false) String selectedTopicIds) {
         try {
             return toAjax(meetingInfoService.insert(meetingInfo, selectedTopicIds));
         } catch (Exception e) {
@@ -135,7 +136,7 @@ public class MeetingInfoController extends BaseController {
     @Log(title = "会议信息", businessType = BusinessType.UPDATE)
     @PostMapping("/edit")
     @ResponseBody
-    public AjaxResult editSave(MeetingInfo meetingInfo, @RequestParam(value = "selectedTopicIds", required = false) String selectedTopicIds) {
+    public AjaxResult editSave(@Valid MeetingInfo meetingInfo, @RequestParam(value = "selectedTopicIds", required = false) String selectedTopicIds) {
         try {
             return toAjax(meetingInfoService.update(meetingInfo, selectedTopicIds));
         } catch (Exception e) {

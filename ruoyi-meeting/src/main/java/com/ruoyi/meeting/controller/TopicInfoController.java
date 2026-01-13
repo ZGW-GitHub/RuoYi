@@ -17,6 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 import java.util.List;
 
 /**
@@ -81,7 +82,7 @@ public class TopicInfoController extends BaseController {
     @Log(title = "议题", businessType = BusinessType.INSERT)
     @PostMapping("/add")
     @ResponseBody
-    public AjaxResult addSave(TopicInfo topicInfo, 
+    public AjaxResult addSave(@Valid TopicInfo topicInfo, 
                              @RequestParam(value = "fileInfoFiles", required = false) MultipartFile[] fileInfoFiles,
                              @RequestParam(value = "attachmentInfoFiles", required = false) MultipartFile[] attachmentInfoFiles) {
         try {
@@ -121,7 +122,7 @@ public class TopicInfoController extends BaseController {
     @Log(title = "议题", businessType = BusinessType.UPDATE)
     @PostMapping("/edit")
     @ResponseBody
-    public AjaxResult editSave(TopicInfo topicInfo,
+    public AjaxResult editSave(@Valid TopicInfo topicInfo,
                               @RequestParam(value = "fileInfoFiles", required = false) MultipartFile[] fileInfoFiles,
                               @RequestParam(value = "attachmentInfoFiles", required = false) MultipartFile[] attachmentInfoFiles,
                               @RequestParam(value = "retainedFileInfo", required = false) String retainedFileInfo,

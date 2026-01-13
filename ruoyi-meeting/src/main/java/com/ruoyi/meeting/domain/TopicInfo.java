@@ -8,6 +8,9 @@ import com.ruoyi.common.core.domain.BaseEntity;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
+
 /**
  * 议题对象 bus_topic_info
  * 
@@ -27,6 +30,8 @@ public class TopicInfo extends BaseEntity {
 
     /** 标题 */
     @Excel(name = "标题")
+    @NotBlank(message = "标题不能为空")
+    @Size(max = 30, message = "标题长度不能超过30个字符")
     private String title;
 
     /** 类型 */
@@ -38,10 +43,12 @@ public class TopicInfo extends BaseEntity {
 
     /** 汇报人 */
     @Excel(name = "汇报人")
+    @Size(max = 20, message = "汇报人长度不能超过20个字符")
     private String reportPeople;
 
     /** 汇报单位 */
     @Excel(name = "汇报单位")
+    @Size(max = 30, message = "汇报单位长度不能超过30个字符")
     private String reportUnit;
 
     /** 文件信息 */
