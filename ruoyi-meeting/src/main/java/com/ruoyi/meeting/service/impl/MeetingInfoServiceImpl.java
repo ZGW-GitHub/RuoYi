@@ -73,6 +73,11 @@ public class MeetingInfoServiceImpl implements MeetingInfoService {
     public int insert(MeetingInfo meetingInfo, String selectedTopicIds) {
         meetingInfo.setMeetingType(MeetingTypeEnum.COMMON.getCode());
         meetingInfo.setMeetingStatus(MeetingStatusEnum.CREATED.getCode());
+        
+        // 如果用户没有填写序号，设置默认值为1
+        if (meetingInfo.getOrderNo() == null) {
+            meetingInfo.setOrderNo(1L);
+        }
 
         // 插入会议信息
         int result = meetingInfoMapper.insert(meetingInfo);
@@ -143,6 +148,11 @@ public class MeetingInfoServiceImpl implements MeetingInfoService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public int update(MeetingInfo meetingInfo, String selectedTopicIds) {
+        // 如果用户没有填写序号，设置默认值为1
+        if (meetingInfo.getOrderNo() == null) {
+            meetingInfo.setOrderNo(1L);
+        }
+        
         // 更新会议信息
         int result = meetingInfoMapper.updateById(meetingInfo);
 

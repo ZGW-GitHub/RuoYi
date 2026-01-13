@@ -8,6 +8,7 @@ import com.ruoyi.common.core.domain.BaseEntity;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
@@ -62,6 +63,7 @@ public class TopicInfo extends BaseEntity {
 
     /** 序号 */
     @Excel(name = "序号")
+    @Min(value = 1, message = "序号必须大于0")
     private Long orderNo;
 
     /** 删除标志（0代表存在） */

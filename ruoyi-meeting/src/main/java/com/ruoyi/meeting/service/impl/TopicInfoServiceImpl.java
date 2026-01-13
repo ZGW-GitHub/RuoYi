@@ -81,6 +81,12 @@ public class TopicInfoServiceImpl implements TopicInfoService {
     private int insert(TopicInfo topicInfo) {
         topicInfo.setTopicStatus(TopicStatusEnum.PENDING.getCode());
         topicInfo.setTopicType(TopicTypeEnum.COMMON.getCode());
+        
+        // 如果用户没有填写序号，设置默认值为1
+        if (topicInfo.getOrderNo() == null) {
+            topicInfo.setOrderNo(1L);
+        }
+        
         return topicInfoMapper.insert(topicInfo);
     }
 
@@ -91,6 +97,11 @@ public class TopicInfoServiceImpl implements TopicInfoService {
      * @return 结果
      */
     private int update(TopicInfo topicInfo) {
+        // 如果用户没有填写序号，设置默认值为1
+        if (topicInfo.getOrderNo() == null) {
+            topicInfo.setOrderNo(1L);
+        }
+        
         return topicInfoMapper.updateById(topicInfo);
     }
 
@@ -140,7 +151,7 @@ public class TopicInfoServiceImpl implements TopicInfoService {
                 throw new RuntimeException("附件不能超过6个");
             }
 
-            int ignore = insert(topicInfo);
+            insert(topicInfo);
 
             // 处理议题文件
             String uploadPath = FileUploadUtil.getTopicFilePath(topicInfo.getId());
