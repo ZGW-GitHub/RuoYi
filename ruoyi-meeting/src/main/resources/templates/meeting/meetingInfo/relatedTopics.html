@@ -7,26 +7,17 @@
     <div class="container-div">
         <div class="row">
             <div class="col-sm-12">
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h4 class="panel-title">
-                            <i class="fa fa-list"></i> 关联议题列表
-                            <span class="pull-right">
-                                <small class="text-muted">按议题顺序排列</small>
-                            </span>
-                        </h4>
-                    </div>
-                    <div class="panel-body">
-                        <div id="relatedTopicsList" class="related-topics-list">
-                            <!-- 议题列表将通过AJAX加载 -->
-                        </div>
-                    </div>
+                <div id="relatedTopicsList" class="related-topics-list">
+                    <!-- 议题列表将通过AJAX加载 -->
                 </div>
             </div>
         </div>
     </div>
     <th:block th:include="include :: footer" />
     <style>
+        .related-topics-list {
+            padding: 20px 0;
+        }
         .topic-card {
             border: 1px solid #e7eaec;
             border-radius: 4px;
