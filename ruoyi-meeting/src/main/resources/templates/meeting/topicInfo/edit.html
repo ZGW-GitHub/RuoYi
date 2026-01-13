@@ -11,8 +11,8 @@
                 <div class="form-group">
                     <label class="col-sm-3 control-label is-required">标题：</label>
                     <div class="col-sm-8">
-                        <input name="title" th:field="*{title}" class="form-control" type="text" required maxlength="30">
-                        <small class="text-muted">最多输入30个字符</small>
+                        <input name="title" th:field="*{title}" class="form-control" type="text" required maxlength="30" id="topicTitle">
+                        <small class="text-muted" id="titleLengthTip" style="display: none;"></small>
                     </div>
                 </div>
             </div>
@@ -28,8 +28,8 @@
                 <div class="form-group">
                     <label class="col-sm-3 control-label">汇报人：</label>
                     <div class="col-sm-8">
-                        <input name="reportPeople" th:field="*{reportPeople}" class="form-control" type="text" maxlength="20">
-                        <small class="text-muted">最多输入20个字符</small>
+                        <input name="reportPeople" th:field="*{reportPeople}" class="form-control" type="text" maxlength="20" id="reportPeople">
+                        <small class="text-muted" id="reportPeopleLengthTip" style="display: none;"></small>
                     </div>
                 </div>
             </div>
@@ -37,8 +37,8 @@
                 <div class="form-group">
                     <label class="col-sm-3 control-label">汇报单位：</label>
                     <div class="col-sm-8">
-                        <input name="reportUnit" th:field="*{reportUnit}" class="form-control" type="text" maxlength="30">
-                        <small class="text-muted">最多输入30个字符</small>
+                        <input name="reportUnit" th:field="*{reportUnit}" class="form-control" type="text" maxlength="30" id="reportUnit">
+                        <small class="text-muted" id="reportUnitLengthTip" style="display: none;"></small>
                     </div>
                 </div>
             </div>
@@ -224,7 +224,68 @@
         // 页面加载完成后显示现有文件
         $(document).ready(function() {
             displayExistingFiles();
+            setupLengthMonitoring();
         });
+
+        // 输入长度监控功能
+        function setupLengthMonitoring() {
+            // 监控标题输入
+            $('#topicTitle').on('input', function() {
+                var current = $(this).val().length;
+                var max = 30;
+                var tip = $('#titleLengthTip');
+                
+                if (current >= max * 0.8) { // 当达到80%长度时开始提示
+                    tip.text('已输入 ' + current + '/' + max + ' 个字符');
+                    tip.show();
+                    if (current >= max) {
+                        tip.addClass('text-danger').removeClass('text-warning');
+                    } else {
+                        tip.addClass('text-warning').removeClass('text-danger');
+                    }
+                } else {
+                    tip.hide();
+                }
+            });
+
+            // 监控汇报人输入
+            $('#reportPeople').on('input', function() {
+                var current = $(this).val().length;
+                var max = 20;
+                var tip = $('#reportPeopleLengthTip');
+                
+                if (current >= max * 0.8) {
+                    tip.text('已输入 ' + current + '/' + max + ' 个字符');
+                    tip.show();
+                    if (current >= max) {
+                        tip.addClass('text-danger').removeClass('text-warning');
+                    } else {
+                        tip.addClass('text-warning').removeClass('text-danger');
+                    }
+                } else {
+                    tip.hide();
+                }
+            });
+
+            // 监控汇报单位输入
+            $('#reportUnit').on('input', function() {
+                var current = $(this).val().length;
+                var max = 30;
+                var tip = $('#reportUnitLengthTip');
+                
+                if (current >= max * 0.8) {
+                    tip.text('已输入 ' + current + '/' + max + ' 个字符');
+                    tip.show();
+                    if (current >= max) {
+                        tip.addClass('text-danger').removeClass('text-warning');
+                    } else {
+                        tip.addClass('text-warning').removeClass('text-danger');
+                    }
+                } else {
+                    tip.hide();
+                }
+            });
+        }
     </script>
 </body>
 </html>
