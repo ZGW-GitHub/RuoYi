@@ -617,7 +617,7 @@ label {
 }
 
 .container-div {
-	padding: 0px 28px;
+	padding: 0px 21px;
 	height: 100%;
 }
 
@@ -628,10 +628,10 @@ label {
 .search-collapse,.select-table {
 	width: 100%;
 	background: #fff;
-	border-radius: 6px;
-	margin-top: 10px;
-	padding-top: 10px;
-	padding-bottom: 10px;
+	border-radius: 3px;
+	margin-top: 6px;
+	padding-top: 6px;
+	padding-bottom: 6px;
 	box-shadow: 1px 1px 3px rgba(0,0,0,.2);
 }
 
@@ -826,7 +826,8 @@ label {
 
 /** 表格查询数据 **/
 .table-striped {
-	min-height: 75%;
+    min-height: 92%;
+    /*min-height: 75%;*/
 }
 
 .table-striped .bootstrap-table, .table-striped .table-bordered {
