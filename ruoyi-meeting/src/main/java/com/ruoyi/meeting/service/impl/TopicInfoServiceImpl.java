@@ -19,7 +19,7 @@ import com.ruoyi.meeting.enums.TopicStatusEnum;
 import com.ruoyi.meeting.enums.TopicTypeEnum;
 import com.ruoyi.meeting.mapper.TopicInfoMapper;
 import com.ruoyi.meeting.service.TopicInfoService;
-import com.ruoyi.meeting.utils.AuditUtil;
+import com.ruoyi.meeting.utils.MeetingPermissionUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -67,7 +67,7 @@ public class TopicInfoServiceImpl implements TopicInfoService {
     @Override
     public List<TopicInfoResp> selectList(TopicInfo topicInfo) {
         SysUser sysUser = ShiroUtils.getSysUser();
-        if (!AuditUtil.hasAuditPermission(sysUser.getRoles())) {
+        if (!MeetingPermissionUtil.hasViewAllTopicPermission(sysUser.getRoles())) {
             topicInfo.setCreateBy(sysUser.getLoginName());
         }
 

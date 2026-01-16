@@ -53,6 +53,7 @@
     <script th:inline="javascript">
         var meetingAuditFlag = [[${@permission.hasAnyRoles('admin,bus_meeting_audit')}]];
         var meetingSubmitFlag = [[${@permission.hasRole('bus_meeting_submit')}]];
+        // var meetingManageFlag = [[${@permission.hasRole('bus_meeting_manage')}]];
         var editFlag = [[${@permission.hasPermi('meeting:topicInfo:edit')}]];
         var removeFlag = [[${@permission.hasPermi('meeting:topicInfo:remove')}]];
         var topicTypeDatas = [[${@dict.getType('bus_meeting_topic_type')}]];

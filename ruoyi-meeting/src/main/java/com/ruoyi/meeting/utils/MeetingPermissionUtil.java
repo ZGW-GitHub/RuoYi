@@ -8,12 +8,17 @@ import java.util.List;
 /**
  * @author Snow
  */
-public class AuditUtil {
+public class MeetingPermissionUtil {
 
     private static final List<String> auditTopicRoleList = Arrays.asList("admin", "bus_meeting_audit");
+    private static final List<String> viewAllTopicRoleList = Arrays.asList("admin", "bus_meeting_audit", "bus_meeting_manage");
 
     public static boolean hasAuditPermission(List<SysRole> roleList) {
         return roleList.stream().anyMatch(role -> auditTopicRoleList.contains(role.getRoleKey()));
+    }
+
+    public static boolean hasViewAllTopicPermission(List<SysRole> roleList) {
+        return roleList.stream().anyMatch(role -> viewAllTopicRoleList.contains(role.getRoleKey()));
     }
 
 }
