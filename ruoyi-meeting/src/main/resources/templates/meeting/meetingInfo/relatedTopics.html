@@ -58,6 +58,14 @@
             margin-bottom: 8px;
             line-height: 1.4;
         }
+        .topic-actions {
+            margin-left: 15px;
+            flex-shrink: 0;
+        }
+        .btn-detail {
+            padding: 6px 15px;
+            font-size: 13px;
+        }
         .topic-meta {
             display: flex;
             align-items: center;
@@ -131,10 +139,21 @@
                        '<span class="meta-item"><i class="fa fa-building"></i>汇报单位：' + (topic.reportUnit || '未设置') + '</span>' +
                        '</div>' +
                        '</div>' +
+                       '<div class="topic-actions">' +
+                       '<button type="button" class="btn btn-info btn-sm btn-detail" onclick="viewTopicDetail(\'' + topic.id + '\')">' +
+                       '<i class="fa fa-eye"></i> 详情' +
+                       '</button>' +
+                       '</div>' +
                        '</div>';
             });
             
             $('#relatedTopicsList').html(html);
+        }
+
+        // 查看议题详情
+        function viewTopicDetail(topicId) {
+            var url = ctx + 'meeting/topicInfo/detail/' + topicId;
+            $.modal.open("议题详情", url);
         }
     </script>
 </body>
