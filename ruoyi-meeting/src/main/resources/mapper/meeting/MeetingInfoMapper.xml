@@ -45,7 +45,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             m.deleted = 0
             <if test="title != null  and title != ''"> and m.title like concat('%', #{title}, '%')</if>
             <if test="meetingStatus != null  and meetingStatus != ''"> and m.meeting_status = #{meetingStatus}</if>
-            <if test="params.beginMeetingTime != null and params.beginMeetingTime != '' and params.endMeetingTime != null and params.endMeetingTime != ''"> and m.meeting_time between #{params.beginMeetingTime} and #{params.endMeetingTime}</if>
+            <if test="params.beginMeetingTime != null and params.beginMeetingTime != ''"> and DATE(m.meeting_time) &gt;= #{params.beginMeetingTime}</if>
+            <if test="params.endMeetingTime != null and params.endMeetingTime != ''"> and DATE(m.meeting_time) &lt;= #{params.endMeetingTime}</if>
         </where>
         order by m.meeting_time
     </select>

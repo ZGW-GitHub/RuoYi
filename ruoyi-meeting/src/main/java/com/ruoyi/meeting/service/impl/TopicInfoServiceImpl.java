@@ -12,6 +12,7 @@ import com.ruoyi.common.utils.FileDownloadUtil;
 import com.ruoyi.common.utils.FileUploadUtil;
 import com.ruoyi.common.utils.ShiroUtils;
 import com.ruoyi.meeting.controller.resp.TopicInfoDetailResp;
+import com.ruoyi.meeting.controller.resp.TopicInfoResp;
 import com.ruoyi.meeting.domain.MeetingExtInfoDTO;
 import com.ruoyi.meeting.domain.TopicInfo;
 import com.ruoyi.meeting.enums.TopicStatusEnum;
@@ -64,11 +65,12 @@ public class TopicInfoServiceImpl implements TopicInfoService {
      * @return 议题
      */
     @Override
-    public List<TopicInfo> selectList(TopicInfo topicInfo) {
+    public List<TopicInfoResp> selectList(TopicInfo topicInfo) {
         SysUser sysUser = ShiroUtils.getSysUser();
         if (!AuditUtil.hasAuditPermission(sysUser.getRoles())) {
             topicInfo.setCreateBy(sysUser.getLoginName());
         }
+
         return topicInfoMapper.selectTopicInfoList(topicInfo);
     }
 

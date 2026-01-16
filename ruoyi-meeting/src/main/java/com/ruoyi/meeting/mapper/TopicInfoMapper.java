@@ -1,6 +1,7 @@
 package com.ruoyi.meeting.mapper;
 
 import com.ruoyi.common.mybatis.BaseMapper;
+import com.ruoyi.meeting.controller.resp.TopicInfoResp;
 import com.ruoyi.meeting.domain.TopicInfo;
 import org.apache.ibatis.annotations.Mapper;
 
@@ -21,6 +22,6 @@ public interface TopicInfoMapper extends BaseMapper<TopicInfo> {
      * @param topicInfo 议题
      * @return 议题集合
      */
-    List<TopicInfo> selectTopicInfoList(TopicInfo topicInfo);
+    List<TopicInfoResp> selectTopicInfoList(TopicInfo topicInfo);
 
 }

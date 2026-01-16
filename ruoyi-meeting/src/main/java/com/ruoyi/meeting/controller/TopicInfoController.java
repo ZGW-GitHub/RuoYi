@@ -7,6 +7,7 @@ import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.utils.poi.ExcelUtil;
 import com.ruoyi.meeting.controller.resp.TopicInfoDetailResp;
+import com.ruoyi.meeting.controller.resp.TopicInfoResp;
 import com.ruoyi.meeting.domain.TopicInfo;
 import com.ruoyi.meeting.service.TopicInfoService;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
@@ -49,7 +50,7 @@ public class TopicInfoController extends BaseController {
     @ResponseBody
     public TableDataInfo list(TopicInfo topicInfo) {
         startPage();
-        List<TopicInfo> list = topicInfoService.selectList(topicInfo);
+        List<TopicInfoResp> list = topicInfoService.selectList(topicInfo);
         return getDataTable(list);
     }
 
@@ -61,8 +62,8 @@ public class TopicInfoController extends BaseController {
     @PostMapping("/export")
     @ResponseBody
     public AjaxResult export(TopicInfo topicInfo) {
-        List<TopicInfo> list = topicInfoService.selectList(topicInfo);
-        ExcelUtil<TopicInfo> util = new ExcelUtil<>(TopicInfo.class);
+        List<TopicInfoResp> list = topicInfoService.selectList(topicInfo);
+        ExcelUtil<TopicInfoResp> util = new ExcelUtil<>(TopicInfoResp.class);
         return util.exportExcel(list, "议题数据");
     }
 

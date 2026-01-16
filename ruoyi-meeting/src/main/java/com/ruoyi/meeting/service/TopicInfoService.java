@@ -2,6 +2,7 @@ package com.ruoyi.meeting.service;
 
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.meeting.controller.resp.TopicInfoDetailResp;
+import com.ruoyi.meeting.controller.resp.TopicInfoResp;
 import com.ruoyi.meeting.domain.TopicInfo;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -30,7 +31,7 @@ public interface TopicInfoService {
      * @param topicInfo 议题
      * @return 议题集合
      */
-    List<TopicInfo> selectList(TopicInfo topicInfo);
+    List<TopicInfoResp> selectList(TopicInfo topicInfo);
 
     /**
      * 批量删除议题
