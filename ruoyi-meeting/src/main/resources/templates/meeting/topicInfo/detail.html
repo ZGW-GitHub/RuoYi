@@ -2,106 +2,210 @@
 <html lang="zh" xmlns:th="http://www.thymeleaf.org" >
 <head>
     <th:block th:include="include :: header('查看议题')" />
+    <style>
+        .detail-container {
+            max-width: 900px;
+            margin: 20px auto;
+            background: white;
+        }
+        
+        /* 头部 */
+        .detail-header {
+            padding: 24px 30px 0 30px;
+            /* border-bottom: 1px solid #e5e5e5; */
+        }
+        
+        .detail-title {
+            font-size: 24px;
+            font-weight: 500;
+            padding: 0 0 12px 0;
+            border-bottom: 1px solid #e5e5e5;
+            color: #333;
+        }
+        
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 3px;
+            font-size: 13px;
+        }
+        
+        .status-badge.status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .status-badge.status-approved {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .status-badge.status-rejected {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        /* 内容区域 */
+        .detail-body {
+            padding: 30px;
+        }
+        
+        .info-section {
+            margin-bottom: 30px;
+        }
+        
+        .info-section:last-child {
+            margin-bottom: 0;
+        }
+        
+        .section-title {
+            font-size: 16px;
+            font-weight: 500;
+            margin: 0 0 16px 0;
+            color: #333;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #e5e5e5;
+        }
+        
+        .info-row {
+            display: flex;
+            padding: 12px 0;
+            border-bottom: 1px solid #f5f5f5;
+        }
+        
+        .info-row:last-child {
+            border-bottom: none;
+        }
+        
+        .info-label {
+            width: 120px;
+            color: #666;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+        
+        .info-value {
+            flex: 1;
+            color: #333;
+            font-size: 14px;
+        }
+        
+        .info-value.empty {
+            color: #999;
+        }
+        
+        /* 文件列表 */
+        .file-item {
+            padding: 8px 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .file-item i {
+            color: #666;
+        }
+        
+        .file-item a {
+            color: #1890ff;
+            text-decoration: none;
+        }
+        
+        .file-item a:hover {
+            text-decoration: underline;
+        }
+        
+        .empty-text {
+            color: #999;
+            font-size: 14px;
+        }
+        
+        /* 驳回原因 */
+        .reject-section {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            padding: 16px;
+            margin-top: 20px;
+        }
+        
+        .reject-section .section-title {
+            color: #856404;
+            border-bottom-color: #ffc107;
+        }
+        
+        .reject-content {
+            color: #856404;
+            font-size: 14px;
+            line-height: 1.6;
+            white-space: pre-wrap;
+        }
+    </style>
 </head>
 <body class="white-bg">
-    <div class="wrapper wrapper-content animated fadeInRight ibox-content">
-        <div class="form-horizontal m" th:object="${topicInfo}">
-            <div class="col-xs-12">
-                <div class="form-group">
-                    <label class="col-sm-3 control-label">标题：</label>
-                    <div class="col-sm-8">
-                        <input class="form-control" type="text" th:value="*{title}" readonly style="background-color: #f5f5f5;">
+    <div class="detail-container" th:object="${topicInfo}">
+        <!-- 内容 -->
+        <div class="detail-body">
+            <!-- 基本信息 -->
+            <div class="info-section">
+                <h2 class="section-title">基本信息</h2>
+                
+                <div class="info-row">
+                    <div class="info-label">标题</div>
+                    <div class="info-value" th:text="*{title}">议题标题</div>
+                </div>
+                
+                <div class="info-row">
+                    <div class="info-label">序号</div>
+                    <div class="info-value" th:text="*{orderNo}">1</div>
+                </div>
+                
+                <div class="info-row">
+                    <div class="info-label">状态</div>
+                    <div class="info-value">
+                        <span id="topicStatusBadge" class="status-badge"></span>
                     </div>
                 </div>
-            </div>
-            <div class="col-xs-12">
-                <div class="form-group">
-                    <label class="col-sm-3 control-label">序号：</label>
-                    <div class="col-sm-8">
-                        <input class="form-control" type="text" th:value="*{orderNo}" readonly style="background-color: #f5f5f5;">
-                    </div>
+                
+                <div class="info-row">
+                    <div class="info-label">汇报人</div>
+                    <div class="info-value" th:text="*{reportPeople} ?: '未设置'" th:classappend="*{reportPeople} ? '' : 'empty'">张三</div>
+                </div>
+                
+                <div class="info-row">
+                    <div class="info-label">汇报单位</div>
+                    <div class="info-value" th:text="*{reportUnit} ?: '未设置'" th:classappend="*{reportUnit} ? '' : 'empty'">技术部</div>
+                </div>
+                
+                <div class="info-row">
+                    <div class="info-label">创建人</div>
+                    <div class="info-value" th:text="*{createBy} ?: '未知'">管理员</div>
+                </div>
+                
+                <div class="info-row">
+                    <div class="info-label">创建时间</div>
+                    <div class="info-value" th:text="${topicInfo.createTime != null ? #temporals.format(topicInfo.createTime, 'yyyy-MM-dd HH:mm:ss') : ''}">2024-01-01 12:00:00</div>
                 </div>
             </div>
-            <div class="col-xs-12">
-                <div class="form-group">
-                    <label class="col-sm-3 control-label">汇报人：</label>
-                    <div class="col-sm-8">
-                        <input class="form-control" type="text" th:value="*{reportPeople}" readonly style="background-color: #f5f5f5;">
-                    </div>
-                </div>
+            
+            <!-- 议题文件 -->
+            <div class="info-section">
+                <h2 class="section-title">议题文件</h2>
+                <div id="fileInfo-existing"></div>
             </div>
-            <div class="col-xs-12">
-                <div class="form-group">
-                    <label class="col-sm-3 control-label">汇报单位：</label>
-                    <div class="col-sm-8">
-                        <input class="form-control" type="text" th:value="*{reportUnit}" readonly style="background-color: #f5f5f5;">
-                    </div>
-                </div>
+            
+            <!-- 附件 -->
+            <div class="info-section">
+                <h2 class="section-title">附件</h2>
+                <div id="attachmentInfo-existing"></div>
             </div>
-            <div class="col-xs-12">
-                <div class="form-group">
-                    <label class="col-sm-3 control-label">状态：</label>
-                    <div class="col-sm-8">
-                        <div class="form-control" style="background-color: #f5f5f5; border: 1px solid #ccc; height: auto; padding: 6px 12px;">
-                            <span id="topicStatusLabel" class="label"></span>
-                        </div>
-                    </div>
-                </div>
+            
+            <!-- 驳回原因 -->
+            <div id="auditRemarkSection" class="reject-section" style="display: none;">
+                <h2 class="section-title">驳回原因</h2>
+                <div id="auditRemarkText" class="reject-content"></div>
             </div>
-            <div class="col-xs-12">
-                <div class="form-group">
-                    <label class="col-sm-3 control-label">议题文件：</label>
-                    <div class="col-sm-8">
-                        <div class="form-control" style="background-color: #f5f5f5; height: auto; min-height: 34px; padding: 6px 12px;">
-                            <div id="fileInfo-existing" class="existing-files"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-xs-12">
-                <div class="form-group">
-                    <label class="col-sm-3 control-label">附件：</label>
-                    <div class="col-sm-8">
-                        <div class="form-control" style="background-color: #f5f5f5; height: auto; min-height: 34px; padding: 6px 12px;">
-                            <div id="attachmentInfo-existing" class="existing-files"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-xs-12">
-                <div class="form-group">
-                    <label class="col-sm-3 control-label">创建人：</label>
-                    <div class="col-sm-8">
-                        <input class="form-control" type="text" th:value="*{createBy}" readonly style="background-color: #f5f5f5;">
-                    </div>
-                </div>
-            </div>
-            <div class="col-xs-12">
-                <div class="form-group">
-                    <label class="col-sm-3 control-label">创建时间：</label>
-                    <div class="col-sm-8">
-                        <input class="form-control" type="text" th:value="${topicInfo.createTime != null ? #temporals.format(topicInfo.createTime, 'yyyy-MM-dd HH:mm:ss') : ''}" readonly style="background-color: #f5f5f5;">
-                    </div>
-                </div>
-            </div>
-            <!-- 驳回原因 - 仅在状态为 rejected 时显示 -->
-            <div class="col-xs-12" id="auditRemarkSection" style="display: none;">
-                <div class="form-group">
-                    <label class="col-sm-3 control-label">驳回原因：</label>
-                    <div class="col-sm-8">
-                        <textarea class="form-control" id="auditRemarkText" readonly style="background-color: #f5f5f5; resize: none; min-height: 80px;"></textarea>
-                    </div>
-                </div>
-            </div>
-            <!-- <div class="col-xs-12"> -->
-            <!--     <div class="form-group"> -->
-            <!--         <div class="col-sm-8 col-sm-offset-3"> -->
-            <!--             <button type="button" class="btn btn-default" onclick="$.modal.close()">关闭</button> -->
-            <!--         </div> -->
-            <!--     </div> -->
-            <!-- </div> -->
         </div>
     </div>
+    
     <th:block th:include="include :: footer" />
     <script th:inline="javascript">
         var existingFileInfo = /*[[${topicInfo.fileInfo}]]*/ '';
@@ -109,6 +213,9 @@
         var topicStatusDatas = [[${@dict.getType('bus_meeting_topic_status')}]];
         var currentTopicStatus = /*[[${topicInfo.topicStatus}]]*/ '';
         var meetingExtInfo = /*[[${topicInfo.meetingExtInfo}]]*/ null;
+        
+        console.log('当前状态值:', currentTopicStatus);
+        console.log('状态字典:', topicStatusDatas);
         
         // 显示现有文件
         function displayExistingFiles() {
@@ -118,7 +225,10 @@
                     displayExistingFileList('fileInfo', fileInfoList);
                 } catch (e) {
                     console.error('解析文件信息失败:', e);
+                    showEmptyState('fileInfo');
                 }
+            } else {
+                showEmptyState('fileInfo');
             }
             
             if (existingAttachmentInfo) {
@@ -127,7 +237,10 @@
                     displayExistingFileList('attachmentInfo', attachmentInfoList);
                 } catch (e) {
                     console.error('解析附件信息失败:', e);
+                    showEmptyState('attachmentInfo');
                 }
+            } else {
+                showEmptyState('attachmentInfo');
             }
         }
 
@@ -138,66 +251,81 @@
             if (fileList && fileList.length > 0) {
                 for (var i = 0; i < fileList.length; i++) {
                     var fileInfo = fileList[i];
-                    var fileItem = $('<div class="file-item" style="margin: 2px 0; padding: 4px 0;">' +
-                        '<span class="file-name"><i class="fa fa-file-o" style="margin-right: 8px; color: #666;"></i>' +
-                        '<a href="' + fileInfo.fileUrl + '" target="_blank" style="color: #337ab7; text-decoration: none;">' + fileInfo.fileName + '</a></span>' +
+                    var fileItem = $('<div class="file-item">' +
+                        '<i class="fa fa-file-o"></i>' +
+                        '<a href="' + fileInfo.fileUrl + '" target="_blank">' + fileInfo.fileName + '</a>' +
                         '</div>');
                     existingDiv.append(fileItem);
                 }
             } else {
-                existingDiv.append('<span class="text-muted" style="font-style: italic;">暂无文件</span>');
+                showEmptyState(fieldName);
             }
+        }
+        
+        function showEmptyState(fieldName) {
+            var existingDiv = $('#' + fieldName + '-existing');
+            existingDiv.html('<div class="empty-text">暂无文件</div>');
         }
 
         // 设置状态显示
         function setTopicStatusDisplay() {
-            var statusLabel = $('#topicStatusLabel');
-            if (currentTopicStatus && topicStatusDatas && topicStatusDatas.length > 0) {
-                var statusDict = topicStatusDatas.find(function(item) {
-                    return item.dictValue === currentTopicStatus;
-                });
-                
-                if (statusDict) {
-                    var labelClass = 'label-default';
-                    // 根据状态值设置不同的样式
-                    switch(currentTopicStatus) {
-                        case '0':
-                            labelClass = 'label-warning';
-                            break;
-                        case '1':
-                            labelClass = 'label-success';
-                            break;
-                        case '2':
-                            labelClass = 'label-danger';
-                            break;
-                    }
-                    statusLabel.addClass('label ' + labelClass).text(statusDict.dictLabel);
-                } else {
-                    statusLabel.addClass('text-muted').text('未知状态');
+            var statusBadge = $('#topicStatusBadge');
+            
+            console.log('开始设置状态显示');
+            console.log('currentTopicStatus:', currentTopicStatus, 'type:', typeof currentTopicStatus);
+            
+            if (!currentTopicStatus) {
+                statusBadge.text('未设置');
+                return;
+            }
+            
+            if (!topicStatusDatas || topicStatusDatas.length === 0) {
+                statusBadge.text('未设置');
+                return;
+            }
+            
+            var statusDict = topicStatusDatas.find(function(item) {
+                console.log('比较:', item.dictValue, '===', currentTopicStatus);
+                return String(item.dictValue) === String(currentTopicStatus);
+            });
+            
+            console.log('找到的状态字典:', statusDict);
+            
+            if (statusDict) {
+                var badgeClass = 'status-pending';
+                switch(String(currentTopicStatus)) {
+                    case '0':
+                        badgeClass = 'status-pending';
+                        break;
+                    case '1':
+                        badgeClass = 'status-approved';
+                        break;
+                    case '2':
+                        badgeClass = 'status-rejected';
+                        break;
                 }
+                statusBadge.addClass(badgeClass).text(statusDict.dictLabel);
             } else {
-                statusLabel.addClass('text-muted').text('未设置');
+                statusBadge.text('未知状态(' + currentTopicStatus + ')');
             }
         }
 
         // 显示驳回原因
         function displayAuditRemark() {
-            // 只有当状态为 rejected 时才显示驳回原因
-            if (currentTopicStatus === 'rejected') {
+            if (currentTopicStatus === 'rejected' || currentTopicStatus === '2' || String(currentTopicStatus) === '2') {
                 var auditRemarkText = $('#auditRemarkText');
                 var auditRemarkSection = $('#auditRemarkSection');
 
                 if (meetingExtInfo && meetingExtInfo.auditRemark) {
-                    auditRemarkText.val(meetingExtInfo.auditRemark);
+                    auditRemarkText.text(meetingExtInfo.auditRemark);
                 } else {
-                    auditRemarkText.val('');
+                    auditRemarkText.text('无驳回原因说明');
                 }
 
                 auditRemarkSection.show();
             }
         }
 
-        // 页面加载完成后显示现有文件和状态
         $(document).ready(function() {
             displayExistingFiles();
             setTopicStatusDisplay();
