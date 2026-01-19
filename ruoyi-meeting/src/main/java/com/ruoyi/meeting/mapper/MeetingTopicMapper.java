@@ -23,7 +23,7 @@ public interface MeetingTopicMapper extends BaseMapper<MeetingTopic> {
      * @param meetingId 会议ID
      * @return 关联的议题列表
      */
-    List<RelatedTopicResp> selectRelatedTopics(@Param("meetingId") Long meetingId);
+    List<RelatedTopicResp> selectRelatedTopic(@Param("meetingId") Long meetingId);
 
     /**
      * 删除会议的所有议题关联

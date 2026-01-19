@@ -22,8 +22,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         select id, meeting_id, topic_id, ext_info, order_no, deleted, create_by, create_time, update_by, update_time, remark from bus_meeting_topic
     </sql>
 
-    <select id="selectRelatedTopics" parameterType="Long" resultType="com.ruoyi.meeting.controller.resp.RelatedTopicResp">
-        select distinct t.id, t.title, t.report_people as reportPeople, t.report_unit as reportUnit, mt.order_no as orderNo
+    <select id="selectRelatedTopic" parameterType="Long" resultType="com.ruoyi.meeting.controller.resp.RelatedTopicResp">
+        select distinct t.id, t.title, t.topic_type, t.topic_status, t.report_people, t.report_unit,
+        t.file_info, t.attachment_info, t.ext_info, mt.order_no, t.create_by, t.create_time, t.update_by, t.update_time, t.remark
         from bus_meeting_topic mt
                  left join bus_topic_info t on mt.topic_id = t.id
         where mt.meeting_id = #{meetingId}

@@ -46,7 +46,7 @@ public class TransmitController {
                 return AjaxResult.error("会议信息不存在");
             }
             // 1.2、查询关联的议题信息
-            List<RelatedTopicResp> relatedTopics = meetingInfoService.getRelatedTopics(meetingId);
+            List<RelatedTopicResp> relatedTopics = meetingInfoService.getRelatedTopic(meetingId);
 
             // 2.1、创建 SQLite 数据库连接
             Class.forName("org.sqlite.JDBC");

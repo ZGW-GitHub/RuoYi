@@ -133,8 +133,8 @@ public class MeetingInfoServiceImpl implements MeetingInfoService {
      * @return 关联的议题列表
      */
     @Override
-    public List<RelatedTopicResp> getRelatedTopics(Long meetingId) {
-        List<RelatedTopicResp> topics = meetingTopicMapper.selectRelatedTopics(meetingId);
+    public List<RelatedTopicResp> getRelatedTopic(Long meetingId) {
+        List<RelatedTopicResp> topics = meetingTopicMapper.selectRelatedTopic(meetingId);
         return new ArrayList<>(topics);
     }
 

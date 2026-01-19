@@ -121,7 +121,7 @@ public class MeetingInfoController extends BaseController {
     public AjaxResult getRelatedTopics(@RequestParam("meetingId") String meetingIdStr) {
         try {
             Long meetingId = Long.valueOf(meetingIdStr);
-            List<RelatedTopicResp> relatedTopics = meetingInfoService.getRelatedTopics(meetingId);
+            List<RelatedTopicResp> relatedTopics = meetingInfoService.getRelatedTopic(meetingId);
             return AjaxResult.success(relatedTopics);
         }  catch (Exception e) {
             logger.error("获取关联议题失败", e);

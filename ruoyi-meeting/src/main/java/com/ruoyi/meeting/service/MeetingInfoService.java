@@ -70,5 +70,5 @@ public interface MeetingInfoService {
      * @param meetingId 会议ID
      * @return 关联的议题列表
      */
-    List<RelatedTopicResp> getRelatedTopics(Long meetingId);
+    List<RelatedTopicResp> getRelatedTopic(Long meetingId);
 }
