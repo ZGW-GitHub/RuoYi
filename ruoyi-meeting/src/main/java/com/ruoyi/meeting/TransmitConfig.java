@@ -109,7 +109,7 @@ public class TransmitConfig {
         return fileDir;
     }
 
-    private static String getDbFilePath() {
+    public static String getDbFilePath() {
         String dbFilePath = getDbFileDir() + FileUtil.FILE_SEPARATOR + "transmit.db";
         FileUtil.touch(dbFilePath);
         return dbFilePath;
