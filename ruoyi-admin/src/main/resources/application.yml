@@ -85,6 +85,9 @@ spring:
   # JMX 配置
   jmx:
     default-domain: ${ruoyi.name}
+  config:
+    import:
+      - classpath:application-meeting.yml
 # MyBatis
 # mybatis:
 #   # 搜索指定包别名

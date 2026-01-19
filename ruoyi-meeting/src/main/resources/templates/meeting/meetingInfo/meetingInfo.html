@@ -130,6 +130,7 @@
                         if (row.topicCount && row.topicCount > 0) {
                             actions.push('<a class="btn btn-info btn-xs" href="javascript:void(0)" onclick="viewRelatedTopics(\'' + row.id + '\', \'' + row.title + '\')"><i class="fa fa-list"></i> 查看议题</a> ');
                         }
+                        actions.push('<a class="btn btn-primary btn-xs" href="javascript:void(0)" onclick="syncToDevice(\'' + row.id + '\')"><i class="fa fa-send"></i> 同步到设备</a> ');
                         actions.push('<a class="btn btn-danger btn-xs ' + meetingSubmitFlag + '" href="javascript:void(0)" onclick="$.operate.remove(\'' + row.id + '\')"><i class="fa fa-remove"></i>删除</a>');
                         return actions.join('');
                     }
@@ -153,6 +154,33 @@
                 yes: function(index) {
                     layer.close(index);
                 }
+            });
+        }
+
+        // 同步到设备
+        function syncToDevice(meetingId) {
+            layer.confirm('确认要将此会议同步到设备吗？', {
+                icon: 3,
+                title: '提示'
+            }, function(index) {
+                $.ajax({
+                    url: ctx + 'transmit/meeting',
+                    type: 'POST',
+                    data: {
+                        meetingId: meetingId
+                    },
+                    success: function(result) {
+                        if (result.code == web_status.SUCCESS) {
+                            $.modal.msgSuccess("同步成功");
+                        } else {
+                            $.modal.msgError(result.msg);
+                        }
+                    },
+                    error: function() {
+                        $.modal.msgError("同步失败，请稍后重试");
+                    }
+                });
+                layer.close(index);
             });
         }
     </script>

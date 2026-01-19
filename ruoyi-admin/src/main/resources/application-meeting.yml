@@ -1,0 +1,20 @@
+meeting:
+  transmit:
+    app-bundle: com.zzedu.DepartMentalApp
+    base-dir-path: ${ruoyi.profile}
+    base-dir-name: bus-meeting
+    sub-dir-db: DB
+    sub-dir-draft: Draft
+    # sub-dir-study: Study
+    # sub-dir-material: Material
+    source:
+      all: ${transmit.base-dir-path}/${transmit.base-dir-name}
+      path-db: ${transmit.source.all}/${transmit.sub-dir-db}
+      path-draft: ${transmit.source.all}/${transmit.sub-dir-draft}
+      # path-study: ${transmit.source.all}/${transmit.sub-dir-study}
+      # path-material: ${transmit.source.all}/${transmit.sub-dir-material}
+    target:
+      all: ./data/storage/el2/base
+      path-db: ${transmit.target.all}/${transmit.base-dir-name}
+      # path-study: ${transmit.target.all}/${transmit.base-dir-name}/${transmit.sub-dir-study}
+      # path-material: ${transmit.target.all}/${transmit.base-dir-name}/${transmit.sub-dir-material}
