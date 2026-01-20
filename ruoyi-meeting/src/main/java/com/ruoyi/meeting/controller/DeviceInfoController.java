@@ -14,6 +14,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.validation.Valid;
 import java.util.List;
 
 /**
@@ -78,7 +79,7 @@ public class DeviceInfoController extends BaseController {
     @Log(title = "设备信息", businessType = BusinessType.INSERT)
     @PostMapping("/add")
     @ResponseBody
-    public AjaxResult addSave(DeviceInfo deviceInfo) {
+    public AjaxResult addSave(@Valid DeviceInfo deviceInfo) {
         return toAjax(deviceInfoService.insert(deviceInfo));
     }
 
@@ -100,7 +101,7 @@ public class DeviceInfoController extends BaseController {
     @Log(title = "设备信息", businessType = BusinessType.UPDATE)
     @PostMapping("/edit")
     @ResponseBody
-    public AjaxResult editSave(DeviceInfo deviceInfo) {
+    public AjaxResult editSave(@Valid DeviceInfo deviceInfo) {
         return toAjax(deviceInfoService.update(deviceInfo));
     }
 
@@ -114,4 +115,16 @@ public class DeviceInfoController extends BaseController {
     public AjaxResult remove(String ids) {
         return toAjax(deviceInfoService.deleteByIds(ids));
     }
+
+    @ResponseBody
+    @PostMapping("checkConnection")
+    public AjaxResult checkConnection(@RequestParam(value = "deviceId", required = false) Long deviceId) {
+        try {
+            deviceInfoService.checkConnection(deviceId);
+            return AjaxResult.success("检测成功");
+        } catch (Exception e) {
+            return AjaxResult.error("检测失败：" + e.getMessage());
+        }
+    }
+
 }

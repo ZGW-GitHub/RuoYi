@@ -68,7 +68,7 @@ create table bus_meeting_topic
 create table bus_device_info
 (
     id            bigint auto_increment comment 'id' primary key,
-    device_serial varchar(20) not null comment '设备序列号',
+    device_serial varchar(32) not null comment '设备序列号',
     device_name   varchar(32) not null comment '设备名称',
     device_ip     varchar(64)          default '' comment 'IP',
     device_port   int                  default null comment '端口',

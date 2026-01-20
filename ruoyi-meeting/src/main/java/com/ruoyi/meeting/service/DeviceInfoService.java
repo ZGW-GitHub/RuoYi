@@ -60,4 +60,12 @@ public interface DeviceInfoService extends IService<DeviceInfo> {
      * @return 结果
      */
     int deleteById(Long id);
+
+    /**
+     * 检查连接
+     *
+     * @param deviceId 设备ID
+     */
+    void checkConnection(Long deviceId);
+
 }

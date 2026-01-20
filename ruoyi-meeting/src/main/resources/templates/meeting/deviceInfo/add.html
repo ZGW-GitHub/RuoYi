@@ -10,7 +10,7 @@
                 <div class="form-group">
                     <label class="col-sm-3 control-label is-required">设备序列号：</label>
                     <div class="col-sm-8">
-                        <input name="deviceSerial" class="form-control" type="text" required>
+                        <input name="deviceSerial" class="form-control" type="text" maxlength="32" required>
                     </div>
                 </div>
             </div>
@@ -18,7 +18,7 @@
                 <div class="form-group">
                     <label class="col-sm-3 control-label">设备名称：</label>
                     <div class="col-sm-8">
-                        <input name="deviceName" class="form-control" type="text">
+                        <input name="deviceName" class="form-control" type="text" maxlength="32">
                     </div>
                 </div>
             </div>
@@ -26,7 +26,16 @@
                 <div class="form-group">
                     <label class="col-sm-3 control-label">IP：</label>
                     <div class="col-sm-8">
-                        <input name="deviceIp" class="form-control" type="text">
+                        <div class="ip-input-group" style="display: flex; align-items: center;">
+                            <input name="ip1" class="form-control ip-part" type="number" min="0" max="255" style="width: 80px; text-align: center; margin-right: 8px;" maxlength="3">
+                            <span style="margin-right: 8px;">.</span>
+                            <input name="ip2" class="form-control ip-part" type="number" min="0" max="255" style="width: 80px; text-align: center; margin-right: 8px;" maxlength="3">
+                            <span style="margin-right: 8px;">.</span>
+                            <input name="ip3" class="form-control ip-part" type="number" min="0" max="255" style="width: 80px; text-align: center; margin-right: 8px;" maxlength="3">
+                            <span style="margin-right: 8px;">.</span>
+                            <input name="ip4" class="form-control ip-part" type="number" min="0" max="255" style="width: 80px; text-align: center;" maxlength="3">
+                        </div>
+                        <input name="deviceIp" type="hidden">
                     </div>
                 </div>
             </div>
@@ -34,7 +43,7 @@
                 <div class="form-group">
                     <label class="col-sm-3 control-label">端口：</label>
                     <div class="col-sm-8">
-                        <input name="devicePort" class="form-control" type="text">
+                        <input name="devicePort" class="form-control" type="number" min="1" max="65535">
                     </div>
                 </div>
             </div>
@@ -45,6 +54,52 @@
         var prefix = ctx + "meeting/deviceInfo"
         $("#form-deviceInfo-add").validate({
             focusCleanup: true
+        });
+
+        // IP输入框处理
+        $(document).ready(function() {
+            // 限制输入只能是数字
+            $('.ip-part').on('input', function() {
+                var value = $(this).val();
+                if (value > 255) {
+                    $(this).val(255);
+                }
+                if (value < 0) {
+                    $(this).val(0);
+                }
+                updateFullIP();
+            });
+
+            // 端口号验证
+            $('input[name="devicePort"]').on('input', function() {
+                var value = $(this).val();
+                if (value > 65535) {
+                    $(this).val(65535);
+                }
+                if (value < 1 && value !== '') {
+                    $(this).val(1);
+                }
+            });
+
+            // 自动跳转到下一个输入框
+            $('.ip-part').on('keyup', function(e) {
+                var value = $(this).val();
+                if (value.length === 3 || (e.keyCode === 190 || e.keyCode === 110)) { // 190是点号键码
+                    var next = $(this).closest('.ip-input-group').find('.ip-part').eq($(this).closest('.ip-input-group').find('.ip-part').index(this) + 1);
+                    if (next.length) {
+                        next.focus();
+                    }
+                }
+            });
+
+            // 更新隐藏的完整IP字段
+            function updateFullIP() {
+                var ip1 = $('input[name="ip1"]').val() || '0';
+                var ip2 = $('input[name="ip2"]').val() || '0';
+                var ip3 = $('input[name="ip3"]').val() || '0';
+                var ip4 = $('input[name="ip4"]').val() || '0';
+                $('input[name="deviceIp"]').val(ip1 + '.' + ip2 + '.' + ip3 + '.' + ip4);
+            }
         });
 
         function submitHandler() {
