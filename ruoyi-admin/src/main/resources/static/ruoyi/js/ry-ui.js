@@ -1027,14 +1027,47 @@ var table = {
                 $("a[class*=layui-layer-btn]", doc).removeClass("layer-disabled");
             },
             // 打开遮罩层
-            loading: function (message) {
-                $.blockUI({ message: '<div class="loaderbox"><div class="loading-activity"></div> ' + message + '</div>' });
+            // loading: function (message) {
+            //     $.blockUI({ message: '<div class="loaderbox"><div class="loading-activity"></div> ' + message + '</div>' });
+            // },
+            // 关闭遮罩层
+            // closeLoading: function () {
+            //     setTimeout(function(){
+            //         $.unblockUI();
+            //     }, 50);
+            // },
+            // 打开遮罩层
+            loading: function (message, delay) {
+                // 清除之前的定时器
+                if ($.modal._loadingTimer) {
+                    clearTimeout($.modal._loadingTimer);
+                    $.modal._loadingTimer = null;
+                }
+
+                // 设置默认延迟时间（毫秒），如果接口在此时间内返回则不显示loading
+                var defaultDelay = delay || 500;
+                $.modal._loadingTimer = setTimeout(function() {
+                    $.modal._loadingTimer = null;
+                    $.modal._isLoadingShown = true;
+                    $.blockUI({ message: '<div class="loaderbox"><div class="loading-activity"></div> ' + message + '</div>' });
+                }, defaultDelay);
             },
             // 关闭遮罩层
             closeLoading: function () {
-                setTimeout(function(){
-                    $.unblockUI();
-                }, 50);
+                // 如果还在延迟期间，直接清除定时器
+                if ($.modal._loadingTimer) {
+                    clearTimeout($.modal._loadingTimer);
+                    $.modal._loadingTimer = null;
+                    return;
+                }
+
+                // 如果loading已经显示，则关闭它
+                if ($.modal._isLoadingShown) {
+                    $.modal._isLoadingShown = false;
+                    setTimeout(function(){
+                        $.unblockUI();
+                    }, 50);
+                }
             },
             // 重新加载
             reload: function () {
