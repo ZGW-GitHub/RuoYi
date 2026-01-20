@@ -1,6 +1,7 @@
 package ${packageName}.service.impl;
 
 import cn.hutool.core.util.StrUtil;
+import java.time.LocalDateTime;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 #if($table.tree)
@@ -9,7 +10,6 @@ import com.ruoyi.common.core.domain.Ztree;
 #end
 #foreach ($column in $columns)
 #if($column.javaField == 'createTime' || $column.javaField == 'updateTime')
-import com.ruoyi.common.utils.DateUtils;
 #break
 #end
 #end
@@ -74,7 +74,7 @@ public class ${ClassName}ServiceImpl implements ${ClassName}Service {
     public int insert(${ClassName} ${className}) {
 #foreach ($column in $columns)
 #if($column.javaField == 'createTime')
-        ${className}.setCreateTime(DateUtils.getNowDate());
+        ${className}.setCreateTime(LocalDateTime.now());
 #end
 #end
 #if($table.sub)
@@ -99,7 +99,7 @@ public class ${ClassName}ServiceImpl implements ${ClassName}Service {
     public int update(${ClassName} ${className}) {
 #foreach ($column in $columns)
 #if($column.javaField == 'updateTime')
-        ${className}.setUpdateTime(DateUtils.getNowDate());
+        ${className}.setUpdateTime(LocalDateTime.now());
 #end
 #end
 #if($table.sub)
