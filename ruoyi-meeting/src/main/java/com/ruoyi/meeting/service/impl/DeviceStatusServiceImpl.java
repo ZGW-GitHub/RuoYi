@@ -78,7 +78,7 @@ public class DeviceStatusServiceImpl implements DeviceStatusService {
     /**
      * 获取已连接的设备列表
      */
-    private Set<String> getConnectedDeviceKey() {
+    public Set<String> getConnectedDeviceKey() {
         try {
             Process process = Runtime.getRuntime().exec("hdc list targets");
             BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));

@@ -130,12 +130,25 @@ public class DeviceInfoController extends BaseController {
     }
 
     @ResponseBody
+    @PostMapping("/saveConnectedWiredDevice")
+    public AjaxResult saveConnectedWiredDeviceToDB() {
+        try {
+            deviceInfoService.saveConnectedWiredDeviceToDB();
+            return AjaxResult.success("保存成功");
+        } catch (Exception e) {
+            log.error("保存失败. 异常: {}", e.getMessage(), e);
+            return AjaxResult.error("保存失败：" + e.getMessage());
+        }
+    }
+
+    @ResponseBody
     @PostMapping("/commonIp")
     public AjaxResult commonIp() {
         try {
             List<String> commonIpList = deviceInfoService.commonIp();
             return AjaxResult.success("获取成功", commonIpList);
         } catch (Exception e) {
+            log.error("获取失败. 异常: {}", e.getMessage(), e);
             return AjaxResult.error("获取IP前缀配置失败：" + e.getMessage());
         }
     }

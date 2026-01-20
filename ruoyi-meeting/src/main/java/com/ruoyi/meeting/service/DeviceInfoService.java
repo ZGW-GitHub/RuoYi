@@ -69,6 +69,12 @@ public interface DeviceInfoService extends IService<DeviceInfo> {
     void checkConnection(Long deviceId);
 
     /**
+     * 将连接的有线设备保存到数据库
+     *
+     */
+    void saveConnectedWiredDeviceToDB();
+
+    /**
      * 获取通用IP前缀配置
      * 
      * @return IP前缀列表

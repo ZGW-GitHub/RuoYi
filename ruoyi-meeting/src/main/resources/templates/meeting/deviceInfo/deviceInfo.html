@@ -44,11 +44,14 @@
                 <a class="btn btn-danger multiple disabled" onclick="$.operate.removeAll()" shiro:hasPermission="meeting:deviceInfo:remove">
                     <i class="fa fa-remove"></i> 删除
                 </a>
-                <a class="btn btn-info" onclick="checkConnection()">
-                    <i class="fa fa-plug"></i> 检测连接
-                </a>
                 <a class="btn btn-warning" onclick="showIpPrefixConfig()">
                     <i class="fa fa-cog"></i> IP前缀配置
+                </a>
+                <a class="btn btn-success" onclick="saveConnectedWiredDevice()">
+                    <i class="fa fa-save"></i> 保存已有线连接的设备
+                </a>
+                <a class="btn btn-info" onclick="checkConnection()">
+                    <i class="fa fa-plug"></i> 检测连接
                 </a>
                 <!-- <a class="btn btn-warning" onclick="$.table.exportExcel()" shiro:hasPermission="meeting:deviceInfo:export"> -->
                 <!--     <i class="fa fa-download"></i> 导出 -->
@@ -256,6 +259,30 @@
                 error: function() {
                     $.modal.closeLoading();
                     $.modal.msgError("保存IP前缀配置失败");
+                }
+            });
+        }
+
+        // 保存已有线连接的设备
+        function saveConnectedWiredDevice() {
+            $.modal.loading("正在保存已有线连接的设备，请稍候...");
+            
+            $.ajax({
+                url: prefix + "/saveConnectedWiredDevice",
+                type: "post",
+                dataType: "json",
+                success: function(result) {
+                    $.modal.closeLoading();
+                    if (result.code == web_status.SUCCESS) {
+                        $.modal.msgSuccess(result.msg);
+                        $("#bootstrap-table").bootstrapTable('refresh');
+                    } else {
+                        $.modal.msgError(result.msg);
+                    }
+                },
+                error: function() {
+                    $.modal.closeLoading();
+                    $.modal.msgError("保存已有线连接的设备失败");
                 }
             });
         }

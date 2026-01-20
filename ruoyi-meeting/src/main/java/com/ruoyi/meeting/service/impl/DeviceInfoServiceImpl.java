@@ -5,9 +5,11 @@ import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.ruoyi.common.utils.ShiroUtils;
 import com.ruoyi.meeting.domain.DeviceInfo;
+import com.ruoyi.meeting.enums.DeviceStatusEnum;
 import com.ruoyi.meeting.mapper.DeviceInfoMapper;
 import com.ruoyi.meeting.service.DeviceInfoService;
 import com.ruoyi.meeting.service.DeviceStatusService;
+import com.ruoyi.meeting.utils.DeviceUtil;
 import com.ruoyi.system.domain.SysConfig;
 import com.ruoyi.system.mapper.SysConfigMapper;
 import lombok.extern.slf4j.Slf4j;
@@ -16,8 +18,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * 设备信息Service业务层处理
@@ -127,6 +132,46 @@ public class DeviceInfoServiceImpl extends ServiceImpl<DeviceInfoMapper, DeviceI
         }
         deviceStatusService.checkConnection(deviceInfoList);
         updateBatchById(deviceInfoList);
+    }
+
+    /**
+     * 将连接的有线设备保存到数据库
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void saveConnectedWiredDeviceToDB() {
+        List<String> wiredConnectedDeviceKeyList = deviceStatusService.getConnectedDeviceKey().stream()
+                .filter(DeviceUtil::isWiredConnection).collect(Collectors.toList());
+        if (CollUtil.isEmpty(wiredConnectedDeviceKeyList)) {
+            log.info("没有已连接的有线设备");
+            return;
+        }
+
+        List<DeviceInfo> deviceInfoList = deviceInfoMapper.listAll();
+        Set<String> savedDeviceSerialSet = deviceInfoList.stream().map(DeviceInfo::getDeviceSerial).collect(Collectors.toSet());
+
+        List<DeviceInfo> newDeviceInfoList = buildNewDeviceInfo(wiredConnectedDeviceKeyList, savedDeviceSerialSet);
+        if (CollUtil.isNotEmpty(newDeviceInfoList)) {
+            saveBatch(newDeviceInfoList);
+            log.info("已保存 {} 台新有线连接设备到数据库", newDeviceInfoList.size());
+        }
+    }
+
+    private List<DeviceInfo> buildNewDeviceInfo(List<String> wiredConnectedDeviceKeyList, Set<String> savedDeviceSerialSet) {
+        List<DeviceInfo> newDeviceInfoList = new ArrayList<>();
+        for (String deviceSerial : wiredConnectedDeviceKeyList) {
+            if (savedDeviceSerialSet.contains(deviceSerial)) {
+                continue;
+            }
+
+            DeviceInfo newDeviceInfo = new DeviceInfo();
+            newDeviceInfo.setDeviceSerial(deviceSerial);
+            newDeviceInfo.setDeviceName(StrUtil.EMPTY);
+            newDeviceInfo.setDeviceIp(StrUtil.EMPTY);
+            newDeviceInfo.setDeviceStatus(DeviceStatusEnum.CONNECTED_WIRED.getCode());
+            newDeviceInfoList.add(newDeviceInfo);
+        }
+        return newDeviceInfoList;
     }
 
     @Override
