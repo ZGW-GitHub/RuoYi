@@ -47,6 +47,9 @@
                 <a class="btn btn-info" onclick="checkConnection()">
                     <i class="fa fa-plug"></i> 检测连接
                 </a>
+                <a class="btn btn-warning" onclick="showIpPrefixConfig()">
+                    <i class="fa fa-cog"></i> IP前缀配置
+                </a>
                 <!-- <a class="btn btn-warning" onclick="$.table.exportExcel()" shiro:hasPermission="meeting:deviceInfo:export"> -->
                 <!--     <i class="fa fa-download"></i> 导出 -->
                 <!-- </a> -->
@@ -56,6 +59,48 @@
             </div>
         </div>
     </div>
+
+    <!-- IP前缀配置模态框 -->
+    <div class="modal fade" id="ipPrefixModal" tabindex="-1" role="dialog" aria-labelledby="ipPrefixModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <h4 class="modal-title" id="ipPrefixModalLabel">IP前缀配置</h4>
+                </div>
+                <div class="modal-body">
+                    <form id="ipPrefixForm">
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-sm-2">
+                                    <input type="number" class="form-control" id="ip1" name="ip1" min="0" max="255" placeholder="192">
+                                </div>
+                                <div class="col-sm-1 text-center" style="padding-top: 7px;">.</div>
+                                <div class="col-sm-2">
+                                    <input type="number" class="form-control" id="ip2" name="ip2" min="0" max="255" placeholder="168">
+                                </div>
+                                <div class="col-sm-1 text-center" style="padding-top: 7px;">.</div>
+                                <div class="col-sm-2">
+                                    <input type="number" class="form-control" id="ip3" name="ip3" min="0" max="255" placeholder="1">
+                                </div>
+                                <div class="col-sm-1 text-center" style="padding-top: 7px;">.</div>
+                                <div class="col-sm-2">
+                                    <input type="number" class="form-control" id="ip4" name="ip4" min="0" max="255" placeholder="" disabled>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary" onclick="saveIpPrefix()">保存</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <th:block th:include="include :: footer" />
     <script th:inline="javascript">
         var editFlag = [[${@permission.hasPermi('meeting:deviceInfo:edit')}]];
@@ -145,6 +190,71 @@
                 error: function() {
                     $.modal.closeLoading();
                     $.modal.msgError("检测连接失败");
+                }
+            });
+        }
+
+        // 显示IP前缀配置模态框
+        function showIpPrefixConfig() {
+            // 先获取当前的IP前缀配置
+            $.ajax({
+                url: prefix + "/commonIp",
+                type: "post",
+                dataType: "json",
+                success: function(result) {
+                    if (result.code == web_status.SUCCESS && result.data && result.data.length >= 3) {
+                        $("#ip1").val(result.data[0] || '');
+                        $("#ip2").val(result.data[1] || '');
+                        $("#ip3").val(result.data[2] || '');
+                    }
+                    $("#ipPrefixModal").modal('show');
+                },
+                error: function() {
+                    $.modal.msgError("获取IP前缀配置失败");
+                }
+            });
+        }
+
+        // 保存IP前缀配置
+        function saveIpPrefix() {
+            var ip1 = $("#ip1").val();
+            var ip2 = $("#ip2").val();
+            var ip3 = $("#ip3").val();
+
+            // 验证输入
+            if (!ip1 || !ip2 || !ip3) {
+                $.modal.msgError("请填写完整的IP前缀");
+                return;
+            }
+
+            if (ip1 < 0 || ip1 > 255 || ip2 < 0 || ip2 > 255 || ip3 < 0 || ip3 > 255) {
+                $.modal.msgError("IP地址段必须在0-255之间");
+                return;
+            }
+
+            $.modal.loading("正在保存配置，请稍候...");
+            
+            $.ajax({
+                url: prefix + "/updateCommonIp",
+                type: "post",
+                dataType: "json",
+                data: {
+                    ip1: ip1,
+                    ip2: ip2,
+                    ip3: ip3
+                },
+                success: function(result) {
+                    $.modal.closeLoading();
+                    if (result.code == web_status.SUCCESS) {
+                        $.modal.msgSuccess("IP前缀配置保存成功");
+                        $("#ipPrefixModal").modal('hide');
+                    } else {
+                        $.modal.msgError(result.msg || "保存失败");
+                    }
+                },
+                error: function() {
+                    $.modal.closeLoading();
+                    $.modal.msgError("保存IP前缀配置失败");
                 }
             });
         }

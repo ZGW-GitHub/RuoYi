@@ -68,4 +68,20 @@ public interface DeviceInfoService extends IService<DeviceInfo> {
      */
     void checkConnection(Long deviceId);
 
+    /**
+     * 获取通用IP前缀配置
+     * 
+     * @return IP前缀列表
+     */
+    List<String> commonIp();
+
+    /**
+     * 更新通用IP前缀配置
+     * 
+     * @param ip1 第一段IP
+     * @param ip2 第二段IP
+     * @param ip3 第三段IP
+     */
+    void updateCommonIp(String ip1, String ip2, String ip3);
+
 }

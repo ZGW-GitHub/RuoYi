@@ -3,21 +3,25 @@ package com.ruoyi.meeting.service.impl;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.ruoyi.common.utils.ShiroUtils;
 import com.ruoyi.meeting.domain.DeviceInfo;
 import com.ruoyi.meeting.mapper.DeviceInfoMapper;
 import com.ruoyi.meeting.service.DeviceInfoService;
 import com.ruoyi.meeting.service.DeviceStatusService;
+import com.ruoyi.system.domain.SysConfig;
+import com.ruoyi.system.mapper.SysConfigMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 
 /**
  * 设备信息Service业务层处理
- * 
+ *
  * @author Snow
  * @date 2026-01-20
  */
@@ -31,9 +35,12 @@ public class DeviceInfoServiceImpl extends ServiceImpl<DeviceInfoMapper, DeviceI
     @Resource
     private DeviceStatusService deviceStatusService;
 
+    @Resource
+    private SysConfigMapper sysConfigMapper;
+
     /**
      * 查询设备信息
-     * 
+     *
      * @param id 设备信息主键
      * @return 设备信息
      */
@@ -44,7 +51,7 @@ public class DeviceInfoServiceImpl extends ServiceImpl<DeviceInfoMapper, DeviceI
 
     /**
      * 查询设备信息列表
-     * 
+     *
      * @param deviceInfo 设备信息
      * @return 设备信息
      */
@@ -55,7 +62,7 @@ public class DeviceInfoServiceImpl extends ServiceImpl<DeviceInfoMapper, DeviceI
 
     /**
      * 新增设备信息
-     * 
+     *
      * @param deviceInfo 设备信息
      * @return 结果
      */
@@ -67,7 +74,7 @@ public class DeviceInfoServiceImpl extends ServiceImpl<DeviceInfoMapper, DeviceI
 
     /**
      * 修改设备信息
-     * 
+     *
      * @param deviceInfo 设备信息
      * @return 结果
      */
@@ -79,7 +86,7 @@ public class DeviceInfoServiceImpl extends ServiceImpl<DeviceInfoMapper, DeviceI
 
     /**
      * 批量删除设备信息
-     * 
+     *
      * @param ids 需要删除的设备信息主键
      * @return 结果
      */
@@ -90,7 +97,7 @@ public class DeviceInfoServiceImpl extends ServiceImpl<DeviceInfoMapper, DeviceI
 
     /**
      * 删除设备信息信息
-     * 
+     *
      * @param id 设备信息主键
      * @return 结果
      */
@@ -122,4 +129,64 @@ public class DeviceInfoServiceImpl extends ServiceImpl<DeviceInfoMapper, DeviceI
         updateBatchById(deviceInfoList);
     }
 
+    @Override
+    public List<String> commonIp() {
+        SysConfig sysConfig = sysConfigMapper.lambdaChainQueryWrapper()
+                .eq(SysConfig::getConfigKey, "bus.meeting.device.ip")
+                .last(" LIMIT 1 ").one();
+
+        String configValue = sysConfig == null ? StrUtil.EMPTY : sysConfig.getConfigValue();
+        List<String> configValueList = StrUtil.split(configValue, StrUtil.DOT);
+
+        List<String> commonIpList = CollUtil.newArrayList();
+        commonIpList.add(StrUtil.nullToEmpty(CollUtil.get(configValueList, 0)));
+        commonIpList.add(StrUtil.nullToEmpty(CollUtil.get(configValueList, 1)));
+        commonIpList.add(StrUtil.nullToEmpty(CollUtil.get(configValueList, 2)));
+        commonIpList.add(StrUtil.nullToEmpty(CollUtil.get(configValueList, 3)));
+        return commonIpList;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void updateCommonIp(String ip1, String ip2, String ip3) {
+        String newValue = StrUtil.format("{}.{}.{}.0", ip1, ip2, ip3);
+
+        SysConfig sysConfig = sysConfigMapper.lambdaChainQueryWrapper()
+                .eq(SysConfig::getConfigKey, "bus.meeting.device.ip")
+                .last(" LIMIT 1 ").one();
+
+        if (sysConfig == null) {
+            sysConfig = new SysConfig();
+            sysConfig.setConfigKey("bus.meeting.device.ip");
+            sysConfig.setConfigName("会议-设备 IP 网段");
+            sysConfig.setConfigType("N");
+            sysConfig.setConfigValue(newValue);
+            sysConfig.setCreateBy(ShiroUtils.getLoginName());
+            sysConfig.setCreateTime(LocalDateTime.now());
+            sysConfigMapper.insert(sysConfig);
+        } else {
+            sysConfig.setConfigValue(newValue);
+            sysConfig.setUpdateBy(ShiroUtils.getLoginName());
+            sysConfig.setUpdateTime(LocalDateTime.now());
+            sysConfigMapper.updateConfig(sysConfig);
+        }
+
+        List<DeviceInfo> deviceInfoList = deviceInfoMapper.listAll();
+        if (CollUtil.isEmpty(deviceInfoList)) {
+            return;
+        }
+
+        deviceInfoList.forEach(item -> {
+            String deviceIp = item.getDeviceIp();
+            if (StrUtil.isBlank(deviceIp)) {
+                item.setDeviceIp(StrUtil.format("{}.{}.{}.0", ip1, ip2, ip3));
+                return;
+            }
+
+            List<String> ipPartList = StrUtil.split(deviceIp, StrUtil.DOT);
+            item.setDeviceIp(StrUtil.format("{}.{}.{}.{}", ip1, ip2, ip3,
+                    StrUtil.blankToDefault(CollUtil.get(ipPartList, 3), "0")));
+        });
+        updateBatchById(deviceInfoList);
+    }
 }

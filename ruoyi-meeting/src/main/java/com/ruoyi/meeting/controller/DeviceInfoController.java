@@ -8,6 +8,7 @@ import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.utils.poi.ExcelUtil;
 import com.ruoyi.meeting.domain.DeviceInfo;
 import com.ruoyi.meeting.service.DeviceInfoService;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -23,6 +24,7 @@ import java.util.List;
  * @author Snow
  * @date 2026-01-20
  */
+@Slf4j
 @Controller
 @RequestMapping("/meeting/deviceInfo")
 public class DeviceInfoController extends BaseController {
@@ -124,6 +126,31 @@ public class DeviceInfoController extends BaseController {
             return AjaxResult.success("检测成功");
         } catch (Exception e) {
             return AjaxResult.error("检测失败：" + e.getMessage());
+        }
+    }
+
+    @ResponseBody
+    @PostMapping("/commonIp")
+    public AjaxResult commonIp() {
+        try {
+            List<String> commonIpList = deviceInfoService.commonIp();
+            return AjaxResult.success("获取成功", commonIpList);
+        } catch (Exception e) {
+            return AjaxResult.error("获取IP前缀配置失败：" + e.getMessage());
+        }
+    }
+
+    @ResponseBody
+    @PostMapping("/updateCommonIp")
+    public AjaxResult updateCommonIp(@RequestParam("ip1") String ip1, 
+                                   @RequestParam("ip2") String ip2, 
+                                   @RequestParam("ip3") String ip3) {
+        try {
+            deviceInfoService.updateCommonIp(ip1, ip2, ip3);
+            return AjaxResult.success("更新成功");
+        } catch (Exception e) {
+            log.error("更新IP前缀配置失败. 异常: {}", e.getMessage(), e);
+            return AjaxResult.error("更新IP前缀配置失败：" + e.getMessage());
         }
     }
 
