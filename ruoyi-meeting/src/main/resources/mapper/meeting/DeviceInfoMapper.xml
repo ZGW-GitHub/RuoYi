@@ -27,11 +27,15 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
     <select id="selectDeviceInfoList" parameterType="com.ruoyi.meeting.domain.DeviceInfo" resultMap="DeviceInfoResult">
         <include refid="selectDeviceInfoVo"/>
-        <where>  
-            <if test="deviceSerial != null  and deviceSerial != ''"> and device_serial like concat('%', #{deviceSerial}, '%')</if>
-            <if test="deviceName != null  and deviceName != ''"> and device_name like concat('%', #{deviceName}, '%')</if>
-            <if test="deviceStatus != null  and deviceStatus != ''"> and device_status = #{deviceStatus}</if>
-        </where>
+        where deleted = 0
+        <if test="deviceSerial != null  and deviceSerial != ''">
+            and device_serial like concat('%', #{deviceSerial}, '%')
+        </if>
+        <if test="deviceName != null  and deviceName != ''">
+            and device_name like concat('%', #{deviceName}, '%')
+        </if>
+        <if test="deviceStatus != null  and deviceStatus != ''">
+            and device_status = #{deviceStatus}
+        </if>
     </select>
-
 </mapper>
