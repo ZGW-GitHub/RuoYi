@@ -49,6 +49,13 @@
             <version>3.42.0.0</version>
         </dependency>
 
+        <!-- Shell 工具 -->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-exec</artifactId>
+            <version>1.6.0</version>
+        </dependency>
+
     </dependencies>
 
 </project>

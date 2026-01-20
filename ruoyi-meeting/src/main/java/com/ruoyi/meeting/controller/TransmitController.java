@@ -1,5 +1,6 @@
 package com.ruoyi.meeting.controller;
 
+import cn.hutool.core.util.StrUtil;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.meeting.TransmitConfig;
 import com.ruoyi.meeting.controller.resp.RelatedTopicResp;
@@ -7,6 +8,7 @@ import com.ruoyi.meeting.domain.MeetingInfo;
 import com.ruoyi.meeting.mapper.MeetingInfoSqliteMapper;
 import com.ruoyi.meeting.mapper.TopicInfoSqliteMapper;
 import com.ruoyi.meeting.service.MeetingInfoService;
+import com.ruoyi.meeting.service.TransmitService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,6 +28,9 @@ import java.util.List;
 @RestController
 @RequestMapping("transmit")
 public class TransmitController {
+
+    @Resource
+    private TransmitService transmitService;
 
     @Resource
     private MeetingInfoService meetingInfoService;
@@ -58,10 +63,14 @@ public class TransmitController {
             meetingInfoSqliteMapper.save(conn, meetingInfo);
             topicInfoSqliteMapper.saveByMeetingId(conn, relatedTopics, meetingId);
 
-            log.info("会议信息传输成功，会议ID: {}, 议题数量: {}", meetingId, relatedTopics.size());
+            String dirName = TransmitConfig.getBaseDirName();
+            String sourcePath = TransmitConfig.getSource().getAll();
+            String targetPath = TransmitConfig.getTarget().getAll();
+            Integer successCount = transmitService.transmit(dirName, sourcePath, targetPath);
+            log.info("会议信息传输成功，会议ID: {}, 议题数量: {}，成功设备数: {}", meetingId, relatedTopics.size(), successCount);
 
             // 3、返回成功
-            return AjaxResult.success("传输成功");
+            return AjaxResult.success(StrUtil.format("传输完成，议题数量: {}，成功设备数: {}", relatedTopics.size(), successCount));
         } catch (Exception e) {
             log.error("会议信息传输失败，会议ID: {}", meetingId, e);
             return AjaxResult.error("传输失败: " + e.getMessage());
