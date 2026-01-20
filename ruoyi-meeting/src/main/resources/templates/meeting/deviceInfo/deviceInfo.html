@@ -248,6 +248,7 @@
                     if (result.code == web_status.SUCCESS) {
                         $.modal.msgSuccess("IP前缀配置保存成功");
                         $("#ipPrefixModal").modal('hide');
+                        $("#bootstrap-table").bootstrapTable('refresh');
                     } else {
                         $.modal.msgError(result.msg || "保存失败");
                     }

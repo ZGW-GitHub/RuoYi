@@ -154,23 +154,9 @@ public class DeviceInfoServiceImpl extends ServiceImpl<DeviceInfoMapper, DeviceI
         SysConfig sysConfig = sysConfigMapper.lambdaChainQueryWrapper()
                 .eq(SysConfig::getConfigKey, "bus.meeting.device.ip")
                 .last(" LIMIT 1 ").one();
+        sysConfig = sysConfig == null ? createConfig(newValue) : updateConfig(sysConfig, newValue);
 
-        if (sysConfig == null) {
-            sysConfig = new SysConfig();
-            sysConfig.setConfigKey("bus.meeting.device.ip");
-            sysConfig.setConfigName("会议-设备 IP 网段");
-            sysConfig.setConfigType("N");
-            sysConfig.setConfigValue(newValue);
-            sysConfig.setCreateBy(ShiroUtils.getLoginName());
-            sysConfig.setCreateTime(LocalDateTime.now());
-            sysConfigMapper.insert(sysConfig);
-        } else {
-            sysConfig.setConfigValue(newValue);
-            sysConfig.setUpdateBy(ShiroUtils.getLoginName());
-            sysConfig.setUpdateTime(LocalDateTime.now());
-            sysConfigMapper.updateConfig(sysConfig);
-        }
-
+        // 更新设备 IP 地址
         List<DeviceInfo> deviceInfoList = deviceInfoMapper.listAll();
         if (CollUtil.isEmpty(deviceInfoList)) {
             return;
@@ -187,6 +173,32 @@ public class DeviceInfoServiceImpl extends ServiceImpl<DeviceInfoMapper, DeviceI
             item.setDeviceIp(StrUtil.format("{}.{}.{}.{}", ip1, ip2, ip3,
                     StrUtil.blankToDefault(CollUtil.get(ipPartList, 3), "0")));
         });
+
+        // 检测连接状态
+        deviceStatusService.checkConnection(deviceInfoList);
         updateBatchById(deviceInfoList);
+    }
+
+    private SysConfig updateConfig(SysConfig sysConfig, String newValue) {
+        sysConfig.setConfigValue(newValue);
+        sysConfig.setUpdateBy(ShiroUtils.getLoginName());
+        sysConfig.setUpdateTime(LocalDateTime.now());
+        sysConfigMapper.updateConfig(sysConfig);
+
+        return sysConfig;
+    }
+
+    private SysConfig createConfig(String newValue) {
+        SysConfig sysConfig;
+        sysConfig = new SysConfig();
+        sysConfig.setConfigKey("bus.meeting.device.ip");
+        sysConfig.setConfigName("会议-设备 IP 网段");
+        sysConfig.setConfigType("N");
+        sysConfig.setConfigValue(newValue);
+        sysConfig.setCreateBy(ShiroUtils.getLoginName());
+        sysConfig.setCreateTime(LocalDateTime.now());
+        sysConfigMapper.insert(sysConfig);
+
+        return sysConfig;
     }
 }
