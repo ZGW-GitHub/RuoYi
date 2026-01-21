@@ -6,6 +6,7 @@ import com.ruoyi.meeting.enums.DeviceStatusEnum;
 import com.ruoyi.meeting.mapper.DeviceInfoMapper;
 import com.ruoyi.meeting.service.DeviceInfoService;
 import com.ruoyi.meeting.service.DeviceStatusService;
+import com.ruoyi.meeting.service.ShellService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,6 +17,7 @@ import java.io.InputStreamReader;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
@@ -24,6 +26,9 @@ import java.util.stream.Collectors;
 @Slf4j
 @Service
 public class DeviceStatusServiceImpl implements DeviceStatusService {
+
+    @Resource
+    private ShellService shellService;
 
     @Resource
     private DeviceInfoMapper deviceInfoMapper;
@@ -67,12 +72,48 @@ public class DeviceStatusServiceImpl implements DeviceStatusService {
             }
 
             String wirelessKey = deviceInfo.getWirelessKey();
-            if (StrUtil.isNotBlank(wirelessKey) && connectedDeviceKeySet.contains(wirelessKey)) {
+            if (StrUtil.isBlank(wirelessKey)) {
+                deviceInfo.setDeviceStatus(DeviceStatusEnum.UNCONNECTED.getCode());
+                continue;
+            }
+
+            if (connectedDeviceKeySet.contains(wirelessKey) && checkWirelessConnect(deviceInfo)) {
+                deviceInfo.setDeviceStatus(DeviceStatusEnum.CONNECTED_WIRELESS.getCode());
+                continue;
+            }
+
+            if (tryWirelessConnect(deviceInfo)) {
                 deviceInfo.setDeviceStatus(DeviceStatusEnum.CONNECTED_WIRELESS.getCode());
                 continue;
             }
             deviceInfo.setDeviceStatus(DeviceStatusEnum.UNCONNECTED.getCode());
         }
+    }
+
+
+    /**
+     * 尝试无线连接
+     *
+     * @param deviceInfo 设备信息
+     * @return {@link Boolean }
+     */
+    public Boolean tryWirelessConnect(DeviceInfo deviceInfo) {
+        String shellResult = shellService.executeCommand("hdc tconn " + deviceInfo.getWirelessKey(), 1L, TimeUnit.SECONDS);
+
+        // [Info]Target is connected, repeat operation
+        return !(StrUtil.isBlank(shellResult) || shellResult.contains("failed"));
+    }
+
+    /**
+     * 检查无线连接
+     *
+     * @param deviceInfo 设备信息
+     * @return {@link Boolean }
+     */
+    private Boolean checkWirelessConnect(DeviceInfo deviceInfo) {
+        String shellResult = shellService.executeCommand("hdc -t " + deviceInfo.getWirelessKey() + " shell echo test_connection");
+
+        return shellResult != null && shellResult.contains("test_connection");
     }
 
     /**

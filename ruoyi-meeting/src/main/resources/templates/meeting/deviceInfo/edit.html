@@ -28,11 +28,11 @@
                     <label class="col-sm-3 control-label">IP：</label>
                     <div class="col-sm-8">
                         <div class="ip-input-group" style="display: flex; align-items: center;">
-                            <input name="ip1" class="form-control ip-part" type="number" min="0" max="255" style="width: 80px; text-align: center; margin-right: 8px;" maxlength="3">
+                            <input name="ip1" class="form-control ip-part" type="number" min="0" max="255" style="width: 80px; text-align: center; margin-right: 8px; background-color: #f5f5f5;" maxlength="3" readonly>
                             <span style="margin-right: 8px;">.</span>
-                            <input name="ip2" class="form-control ip-part" type="number" min="0" max="255" style="width: 80px; text-align: center; margin-right: 8px;" maxlength="3">
+                            <input name="ip2" class="form-control ip-part" type="number" min="0" max="255" style="width: 80px; text-align: center; margin-right: 8px; background-color: #f5f5f5;" maxlength="3" readonly>
                             <span style="margin-right: 8px;">.</span>
-                            <input name="ip3" class="form-control ip-part" type="number" min="0" max="255" style="width: 80px; text-align: center; margin-right: 8px;" maxlength="3">
+                            <input name="ip3" class="form-control ip-part" type="number" min="0" max="255" style="width: 80px; text-align: center; margin-right: 8px; background-color: #f5f5f5;" maxlength="3" readonly>
                             <span style="margin-right: 8px;">.</span>
                             <input name="ip4" class="form-control ip-part" type="number" min="0" max="255" style="width: 80px; text-align: center;" maxlength="3">
                         </div>
@@ -59,20 +59,11 @@
 
         // IP输入框处理
         $(document).ready(function() {
-            // 初始化IP输入框
-            var deviceIp = $('input[name="deviceIp"]').val();
-            if (deviceIp) {
-                var ipParts = deviceIp.split('.');
-                if (ipParts.length === 4) {
-                    $('input[name="ip1"]').val(ipParts[0]);
-                    $('input[name="ip2"]').val(ipParts[1]);
-                    $('input[name="ip3"]').val(ipParts[2]);
-                    $('input[name="ip4"]').val(ipParts[3]);
-                }
-            }
+            // 获取IP前缀配置并初始化IP输入框
+            loadIpPrefixAndInitialize();
 
-            // 限制输入只能是数字
-            $('.ip-part').on('input', function() {
+            // 限制输入只能是数字，只对第4段生效
+            $('input[name="ip4"]').on('input', function() {
                 var value = $(this).val();
                 if (value > 255) {
                     $(this).val(255);
@@ -94,17 +85,6 @@
                 }
             });
 
-            // 自动跳转到下一个输入框
-            $('.ip-part').on('keyup', function(e) {
-                var value = $(this).val();
-                if (value.length === 3 || (e.keyCode === 190 || e.keyCode === 110)) { // 190是点号键码
-                    var next = $(this).closest('.ip-input-group').find('.ip-part').eq($(this).closest('.ip-input-group').find('.ip-part').index(this) + 1);
-                    if (next.length) {
-                        next.focus();
-                    }
-                }
-            });
-
             // 更新隐藏的完整IP字段
             function updateFullIP() {
                 var ip1 = $('input[name="ip1"]').val() || '0';
@@ -112,6 +92,62 @@
                 var ip3 = $('input[name="ip3"]').val() || '0';
                 var ip4 = $('input[name="ip4"]').val() || '0';
                 $('input[name="deviceIp"]').val(ip1 + '.' + ip2 + '.' + ip3 + '.' + ip4);
+            }
+
+            // 加载IP前缀配置并初始化IP输入框
+            function loadIpPrefixAndInitialize() {
+                $.ajax({
+                    url: prefix + "/commonIp",
+                    type: "post",
+                    dataType: "json",
+                    success: function(result) {
+                        var prefixIp1, prefixIp2, prefixIp3;
+                        
+                        if (result.code == web_status.SUCCESS && result.data && result.data.length >= 3) {
+                            prefixIp1 = result.data[0] || '192';
+                            prefixIp2 = result.data[1] || '168';
+                            prefixIp3 = result.data[2] || '1';
+                        } else {
+                            // 默认值
+                            prefixIp1 = '192';
+                            prefixIp2 = '168';
+                            prefixIp3 = '1';
+                        }
+
+                        // 设置前三段IP（从配置获取）
+                        $('input[name="ip1"]').val(prefixIp1);
+                        $('input[name="ip2"]').val(prefixIp2);
+                        $('input[name="ip3"]').val(prefixIp3);
+
+                        // 初始化第四段IP（从现有设备IP获取）
+                        var deviceIp = $('input[name="deviceIp"]').val();
+                        if (deviceIp) {
+                            var ipParts = deviceIp.split('.');
+                            if (ipParts.length === 4) {
+                                $('input[name="ip4"]').val(ipParts[3]);
+                            }
+                        }
+
+                        updateFullIP();
+                    },
+                    error: function() {
+                        // 默认值
+                        $('input[name="ip1"]').val('192');
+                        $('input[name="ip2"]').val('168');
+                        $('input[name="ip3"]').val('1');
+                        
+                        // 初始化第四段IP（从现有设备IP获取）
+                        var deviceIp = $('input[name="deviceIp"]').val();
+                        if (deviceIp) {
+                            var ipParts = deviceIp.split('.');
+                            if (ipParts.length === 4) {
+                                $('input[name="ip4"]').val(ipParts[3]);
+                            }
+                        }
+
+                        updateFullIP();
+                    }
+                });
             }
         });
 
