@@ -102,28 +102,37 @@
         var prefix = ctx + "meeting/meetingInfo";
         var selectedTopics = []; // 存储已选择的议题
         
-        $("#form-meetingInfo-edit").validate({
-            focusCleanup: true
+        $(function() {
+            $("#form-meetingInfo-edit").validate({
+                focusCleanup: true
+            });
+
+            $("input[name='meetingTime']").datetimepicker({
+                format: "yyyy-mm-dd hh:ii",
+                minView: "hour",
+                autoclose: true,
+                todayBtn: true
+            });
+
+            setupLengthMonitoring();
+            
+            // 页面加载时，如果有已关联的议题，需要显示出来
+            var meetingId = $('input[name="id"]').val();
+            if (meetingId) {
+                loadRelatedTopics(meetingId);
+            }
         });
 
         function submitHandler() {
             if ($.validate.form()) {
-                // 将选中的议题ID添加到表单数据中
-                var formData = $('#form-meetingInfo-edit').serialize();
-                if (selectedTopics.length > 0) {
-                    var topicIds = selectedTopics.map(function(topic) { return topic.id; }).join(',');
-                    formData += '&selectedTopicIds=' + encodeURIComponent(topicIds);
-                }
-                $.operate.save(prefix + "/edit", formData);
+                // 更新选中的议题ID到隐藏字段
+                var topicIds = selectedTopics.map(function(topic) { return topic.id; }).join(',');
+                $('#selectedTopicIds').val(topicIds);
+                
+                // 提交表单
+                $.operate.save(prefix + "/edit", $('#form-meetingInfo-edit').serialize());
             }
         }
-
-        $("input[name='meetingTime']").datetimepicker({
-            format: "yyyy-mm-dd hh:ii",
-            minView: "hour",
-            autoclose: true,
-            todayBtn: true
-        });
 
         // 打开议题选择器
         function openTopicSelector() {
