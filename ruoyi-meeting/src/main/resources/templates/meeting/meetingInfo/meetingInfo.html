@@ -58,7 +58,7 @@
     <th:block th:include="include :: footer" />
     <script th:inline="javascript">
         var meetingAuditFlag = [[${@permission.hasAnyRoles('admin,bus_meeting_audit')}]];
-        var meetingSubmitFlag = [[${@permission.hasRole('bus_meeting_submit')}]];
+        var meetingSubmitFlag = [[${@permission.hasAnyRoles('admin,bus_meeting_submit,bus_meeting_manage')}]];
         var editFlag = [[${@permission.hasPermi('meeting:meetingInfo:edit')}]];
         var removeFlag = [[${@permission.hasPermi('meeting:meetingInfo:remove')}]];
         var meetingTypeDatas = [[${@dict.getType('bus_meeting_meeting_type')}]];
