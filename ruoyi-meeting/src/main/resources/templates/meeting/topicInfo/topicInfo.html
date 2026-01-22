@@ -167,11 +167,11 @@
 
         // 下载议题文件
         function downloadTopicFiles(topicId) {
-            $.modal.loading("正在打包下载，请稍候...");
+            // $.modal.loading("正在打包下载，请稍候...");
             window.location.href = prefix + "/download/" + topicId;
-            setTimeout(function() {
-                $.modal.closeLoading();
-            }, 2000);
+            // setTimeout(function() {
+            //     $.modal.closeLoading();
+            // }, 2000);
         }
 
         // 审核议题
