@@ -10,8 +10,8 @@ import java.util.List;
  */
 public class MeetingPermissionUtil {
 
-    private static final List<String> auditTopicRoleList = Arrays.asList("admin", "bus_meeting_audit");
-    private static final List<String> viewAllTopicRoleList = Arrays.asList("admin", "bus_meeting_audit", "bus_meeting_manage");
+    private static final List<String> auditTopicRoleList = Arrays.asList("admin", "busMeeting_topicAudit");
+    private static final List<String> viewAllTopicRoleList = Arrays.asList("admin", "busMeeting_topicAudit", "busMeeting_meetingManage");
 
     public static boolean hasAuditPermission(List<SysRole> roleList) {
         return roleList.stream().anyMatch(role -> auditTopicRoleList.contains(role.getRoleKey()));

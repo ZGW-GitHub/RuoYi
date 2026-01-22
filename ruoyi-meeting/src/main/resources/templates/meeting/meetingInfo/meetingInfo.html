@@ -37,14 +37,17 @@
             </div>
 
             <div class="btn-group-sm" id="toolbar" role="group">
-                <a class="btn btn-success" onclick="$.operate.add()" shiro:hasRole="bus_meeting_submit">
+                <a class="btn btn-success" onclick="$.operate.add()" shiro:hasRole="busMeeting_tipicSubmit">
                     <i class="fa fa-plus"></i> 新建会议
                 </a>
                 <!-- <a class="btn btn-primary single disabled" onclick="$.operate.edit()" shiro:hasPermission="meeting:meetingInfo:edit"> -->
                 <!--     <i class="fa fa-edit"></i> 修改 -->
                 <!-- </a> -->
-                <a class="btn btn-danger multiple disabled" onclick="$.operate.removeAll()" shiro:hasRole="bus_meeting_submit">
+                <a class="btn btn-danger multiple disabled" onclick="$.operate.removeAll()" shiro:hasRole="busMeeting_tipicSubmit">
                     <i class="fa fa-remove"></i> 删除
+                </a>
+                <a class="btn btn-warning" onclick="clearTabletData()" shiro:hasRole="busMeeting_meetingManage">
+                    <i class="fa fa-trash-o"></i> 清除平板数据
                 </a>
                 <!-- <a class="btn btn-warning" onclick="$.table.exportExcel()" shiro:hasPermission="meeting:meetingInfo:export"> -->
                 <!--     <i class="fa fa-download"></i> 导出 -->
@@ -57,8 +60,8 @@
     </div>
     <th:block th:include="include :: footer" />
     <script th:inline="javascript">
-        var meetingAuditFlag = [[${@permission.hasAnyRoles('admin,bus_meeting_audit')}]];
-        var meetingSubmitFlag = [[${@permission.hasAnyRoles('admin,bus_meeting_submit,bus_meeting_manage')}]];
+        var meetingAuditFlag = [[${@permission.hasAnyRoles('admin,busMeeting_topicAudit')}]];
+        var meetingSubmitFlag = [[${@permission.hasAnyRoles('admin,busMeeting_tipicSubmit,busMeeting_meetingManage')}]];
         var editFlag = [[${@permission.hasPermi('meeting:meetingInfo:edit')}]];
         var removeFlag = [[${@permission.hasPermi('meeting:meetingInfo:remove')}]];
         var meetingTypeDatas = [[${@dict.getType('bus_meeting_meeting_type')}]];
@@ -171,13 +174,55 @@
                     },
                     success: function(result) {
                         if (result.code == web_status.SUCCESS) {
-                            $.modal.msgSuccess("同步成功");
+                            layer.alert(result.msg, {
+                                icon: 1,
+                                title: '同步成功'
+                            });
                         } else {
-                            $.modal.msgError(result.msg);
+                            layer.alert(result.msg, {
+                                icon: 2,
+                                title: '同步失败'
+                            });
                         }
                     },
                     error: function() {
-                        $.modal.msgError("同步失败，请稍后重试");
+                        layer.alert("同步失败，请稍后重试", {
+                            icon: 2,
+                            title: '同步失败'
+                        });
+                    }
+                });
+                layer.close(index);
+            });
+        }
+
+        // 清除平板数据
+        function clearTabletData() {
+            layer.confirm('确认要清除所有平板数据吗？此操作不可恢复！', {
+                icon: 3,
+                title: '警告'
+            }, function(index) {
+                $.ajax({
+                    url: ctx + 'transmit/clearData',
+                    type: 'POST',
+                    success: function(result) {
+                        if (result.code == web_status.SUCCESS) {
+                            layer.alert(result.msg, {
+                                icon: 1,
+                                title: '清除成功'
+                            });
+                        } else {
+                            layer.alert(result.msg, {
+                                icon: 2,
+                                title: '清除失败'
+                            });
+                        }
+                    },
+                    error: function() {
+                        layer.alert("清除失败，请稍后重试", {
+                            icon: 2,
+                            title: '清除失败'
+                        });
                     }
                 });
                 layer.close(index);

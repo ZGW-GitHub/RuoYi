@@ -31,13 +31,13 @@
             </div>
 
             <div class="btn-group-sm" id="toolbar" role="group">
-                <a class="btn btn-success" onclick="$.operate.add()" shiro:hasRole="bus_meeting_submit" id="addBtn" style="display: none;">
+                <a class="btn btn-success" onclick="$.operate.add()" shiro:hasRole="busMeeting_tipicSubmit" id="addBtn" style="display: none;">
                     <i class="fa fa-plus"></i> 新建议题
                 </a>
                 <!-- <a class="btn btn-primary single disabled" onclick="$.operate.edit()" shiro:hasPermission="meeting:topicInfo"> -->
                 <!--     <i class="fa fa-edit"></i> 修改 -->
                 <!-- </a> -->
-                <a class="btn btn-danger multiple disabled" onclick="$.operate.removeAll()" shiro:hasRole="bus_meeting_submit" id="removeBtn">
+                <a class="btn btn-danger multiple disabled" onclick="$.operate.removeAll()" shiro:hasRole="busMeeting_tipicSubmit" id="removeBtn">
                     <i class="fa fa-remove"></i> 删除
                 </a>
                 <!-- <a class="btn btn-warning" onclick="$.table.exportExcel()" shiro:hasPermission="meeting:topicInfo"> -->
@@ -51,9 +51,9 @@
     </div>
     <th:block th:include="include :: footer" />
     <script th:inline="javascript">
-        var meetingAuditFlag = [[${@permission.hasAnyRoles('admin,bus_meeting_audit')}]];
-        var meetingSubmitFlag = [[${@permission.hasRole('bus_meeting_submit')}]];
-        // var meetingManageFlag = [[${@permission.hasRole('bus_meeting_manage')}]];
+        var meetingAuditFlag = [[${@permission.hasAnyRoles('admin,busMeeting_topicAudit')}]];
+        var meetingSubmitFlag = [[${@permission.hasRole('busMeeting_tipicSubmit')}]];
+        // var meetingManageFlag = [[${@permission.hasRole('busMeeting_meetingManage')}]];
         var editFlag = [[${@permission.hasPermi('meeting:topicInfo:edit')}]];
         var removeFlag = [[${@permission.hasPermi('meeting:topicInfo:remove')}]];
         var topicTypeDatas = [[${@dict.getType('bus_meeting_topic_type')}]];

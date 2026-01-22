@@ -1,8 +1,8 @@
 package com.ruoyi.meeting.service.impl;
 
-import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.util.StrUtil;
+import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.meeting.TransmitConfig;
 import com.ruoyi.meeting.domain.DeviceInfo;
 import com.ruoyi.meeting.enums.DeviceStatusEnum;
@@ -38,17 +38,12 @@ public class TransmitServiceImpl implements TransmitService {
      * 传输数据到所有设备
      */
     @Override
-    public Integer transmit(String dirName, String sourcePath, String targetPath) {
+    public Integer transmit(List<DeviceInfo> deviceList, String dirName, String sourcePath, String targetPath) {
         FileUtil.mkdir(sourcePath);
         log.info("\n\n== 开始传输数据: ==\n传输的目录: {}\n存放的目录: {}\n删除的旧目录: {}\n", sourcePath, targetPath, targetPath + "/" + dirName);
 
-        List<DeviceInfo> connectedDeviceList = deviceStatusService.getConnectedDevice(true);
-        if (CollUtil.isEmpty(connectedDeviceList)) {
-            return 0;
-        }
-
         AtomicInteger successCount = new AtomicInteger(0);
-        List<Future<Boolean>> futureList = connectedDeviceList.stream()
+        List<Future<Boolean>> futureList = deviceList.stream()
                 .filter(item -> DeviceStatusEnum.isConnected(item.getDeviceStatus()))
                 .map(deviceInfo -> {
                     if (DeviceStatusEnum.CONNECTED_WIRED.getCode().equals(deviceInfo.getDeviceStatus())) {
@@ -72,14 +67,9 @@ public class TransmitServiceImpl implements TransmitService {
      * 清除数据
      */
     @Override
-    public String clear() {
-        List<DeviceInfo> connectedDeviceList = deviceStatusService.getConnectedDevice(true);
-        if (CollUtil.isEmpty(connectedDeviceList)) {
-            return "";
-        }
-
+    public AjaxResult clear(List<DeviceInfo> deviceList) {
         AtomicInteger successCount = new AtomicInteger(0);
-        List<Future<Boolean>> futureList = connectedDeviceList.stream()
+        List<Future<Boolean>> futureList = deviceList.stream()
                 .filter(item -> DeviceStatusEnum.isConnected(item.getDeviceStatus()))
                 .map(deviceInfo -> {
                     if (DeviceStatusEnum.CONNECTED_WIRED.getCode().equals(deviceInfo.getDeviceStatus())) {
@@ -97,7 +87,7 @@ public class TransmitServiceImpl implements TransmitService {
                 }).collect(Collectors.toList());
         ConcurrentUtil.waitThreadPoolTaskFinish(futureList, successCount);
 
-        return String.format("成功设备数：%d", successCount.get());
+        return AjaxResult.success(String.format("清除完成，成功设备数：%d", successCount.get()));
     }
 
 }
