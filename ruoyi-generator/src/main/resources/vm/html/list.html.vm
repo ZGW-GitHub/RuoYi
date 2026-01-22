@@ -66,16 +66,16 @@
             </div>
 
             <div class="btn-group-sm" id="toolbar" role="group">
-                <a class="btn btn-success" onclick="$.operate.add()" shiro:hasPermission="${permissionPrefix}:add">
+                <a class="btn btn-success" onclick="$.operate.add()" shiro:hasPermission="${permissionPrefix}">
                     <i class="fa fa-plus"></i> 添加
                 </a>
-                <a class="btn btn-primary single disabled" onclick="$.operate.edit()" shiro:hasPermission="${permissionPrefix}:edit">
+                <a class="btn btn-primary single disabled" onclick="$.operate.edit()" shiro:hasPermission="${permissionPrefix}">
                     <i class="fa fa-edit"></i> 修改
                 </a>
-                <a class="btn btn-danger multiple disabled" onclick="$.operate.removeAll()" shiro:hasPermission="${permissionPrefix}:remove">
+                <a class="btn btn-danger multiple disabled" onclick="$.operate.removeAll()" shiro:hasPermission="${permissionPrefix}">
                     <i class="fa fa-remove"></i> 删除
                 </a>
-                <a class="btn btn-warning" onclick="$.table.exportExcel()" shiro:hasPermission="${permissionPrefix}:export">
+                <a class="btn btn-warning" onclick="$.table.exportExcel()" shiro:hasPermission="${permissionPrefix}">
                     <i class="fa fa-download"></i> 导出
                 </a>
             </div>
@@ -86,8 +86,8 @@
     </div>
     <th:block th:include="include :: footer" />
     <script th:inline="javascript">
-        var editFlag = [[${@permission.hasPermi('${permissionPrefix}:edit')}]];
-        var removeFlag = [[${@permission.hasPermi('${permissionPrefix}:remove')}]];
+        var editFlag = [[${@permission.hasPermi('${permissionPrefix}')}]];
+        var removeFlag = [[${@permission.hasPermi('${permissionPrefix}')}]];
 #foreach($column in $columns)
 #if(${column.dictType} != '')
         var ${column.javaField}Datas = [[${@dict.getType('${column.dictType}')}]];
