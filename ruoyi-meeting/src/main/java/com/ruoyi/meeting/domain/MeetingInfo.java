@@ -68,6 +68,20 @@ public class MeetingInfo extends BaseEntity {
     private String participationInfo;
 
     /**
+     * 出席人员
+     */
+    @Excel(name = "出席人员")
+    @Size(max = 200, message = "出席人员长度不能超过200个字符")
+    private String participantPeople;
+
+    /**
+     * 列席人员
+     */
+    @Excel(name = "列席人员")
+    @Size(max = 200, message = "列席人员长度不能超过200个字符")
+    private String attendancePeople;
+
+    /**
      * 议题文件信息
      */
     private String fileInfo;

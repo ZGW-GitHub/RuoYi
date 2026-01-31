@@ -75,6 +75,24 @@
             </div>
             <div class="col-xs-12">
                 <div class="form-group">
+                    <label class="col-sm-3 control-label">出席人员：</label>
+                    <div class="col-sm-8">
+                        <textarea name="participantPeople" th:field="*{participantPeople}" class="form-control" rows="3" maxlength="200" id="participantPeople"></textarea>
+                        <small class="text-muted" id="participantLengthTip" style="display: none;"></small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xs-12">
+                <div class="form-group">
+                    <label class="col-sm-3 control-label">列席人员：</label>
+                    <div class="col-sm-8">
+                        <textarea name="attendancePeople" th:field="*{attendancePeople}" class="form-control" rows="3" maxlength="200" id="attendancePeople"></textarea>
+                        <small class="text-muted" id="attendanceLengthTip" style="display: none;"></small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xs-12">
+                <div class="form-group">
                     <label class="col-sm-3 control-label">关联议题：</label>
                     <div class="col-sm-8">
                         <div class="input-group" style="margin-bottom: 5px;">
@@ -271,6 +289,44 @@
                 var current = $(this).val().length;
                 var max = 200;
                 var tip = $('#participationLengthTip');
+                
+                if (current >= max * 0.8) {
+                    tip.text('已输入 ' + current + '/' + max + ' 个字符');
+                    tip.show();
+                    if (current >= max) {
+                        tip.addClass('text-danger').removeClass('text-warning');
+                    } else {
+                        tip.addClass('text-warning').removeClass('text-danger');
+                    }
+                } else {
+                    tip.hide();
+                }
+            });
+
+            // 监控出席人员输入
+            $('#participantPeople').on('input', function() {
+                var current = $(this).val().length;
+                var max = 200;
+                var tip = $('#participantLengthTip');
+                
+                if (current >= max * 0.8) {
+                    tip.text('已输入 ' + current + '/' + max + ' 个字符');
+                    tip.show();
+                    if (current >= max) {
+                        tip.addClass('text-danger').removeClass('text-warning');
+                    } else {
+                        tip.addClass('text-warning').removeClass('text-danger');
+                    }
+                } else {
+                    tip.hide();
+                }
+            });
+
+            // 监控列席人员输入
+            $('#attendancePeople').on('input', function() {
+                var current = $(this).val().length;
+                var max = 200;
+                var tip = $('#attendanceLengthTip');
                 
                 if (current >= max * 0.8) {
                     tip.text('已输入 ' + current + '/' + max + ' 个字符');

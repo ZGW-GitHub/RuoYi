@@ -12,6 +12,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="meetingTime" column="meeting_time"/>
         <result property="meetingHost" column="meeting_host"/>
         <result property="participationInfo" column="participation_info"/>
+        <result property="participantPeople" column="participant_people"/>
+        <result property="attendancePeople" column="attendance_people"/>
         <result property="fileInfo" column="file_info"/>
         <result property="attachmentInfo" column="attachment_info"/>
         <result property="extInfo" column="ext_info"/>
@@ -25,13 +27,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </resultMap>
 
     <sql id="selectMeetingInfoVo">
-        select id, title, meeting_type, meeting_status, meeting_time, meeting_host, participation_info, file_info, attachment_info, ext_info, order_no, deleted, create_by, create_time, update_by, update_time, remark from bus_meeting_info
+        select id, title, meeting_type, meeting_status, meeting_time, meeting_host, participation_info, participant_people, attendance_people, file_info, attachment_info, ext_info, order_no, deleted, create_by, create_time, update_by, update_time, remark from bus_meeting_info
     </sql>
 
     <select id="selectMeetingInfoList" parameterType="com.ruoyi.meeting.domain.MeetingInfo" resultType="com.ruoyi.meeting.controller.resp.MeetingInfoPageResp">
         select 
             m.id, m.title, m.meeting_type, m.meeting_status, m.meeting_time, m.meeting_host, 
-            m.participation_info, m.file_info, m.attachment_info, m.ext_info, m.order_no, 
+            m.participation_info, m.participant_people, m.attendance_people, m.file_info, m.attachment_info, m.ext_info, m.order_no, 
             m.deleted, m.create_by, m.create_time, m.update_by, m.update_time, m.remark,
             COALESCE(t.topic_count, 0) as topic_count
         from bus_meeting_info m
