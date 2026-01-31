@@ -4,7 +4,7 @@ html {
 
 body.signin {
     height: auto;
-    background: url(../img/login-background.jpg) no-repeat center fixed;
+    background: url(../img/login-background.png) no-repeat center fixed;
     -webkit-background-size: cover;
     -moz-background-size: cover;
     -o-background-size: cover;
@@ -12,8 +12,9 @@ body.signin {
 }
 
 .signinpanel {
-    width: 750px;
-    margin: 10% auto 0;
+    width: 650px;
+    /*margin: 10% auto 0;*/
+    margin:15% 16% auto auto;
     /*color: rgba(255, 255, 255, .95)*/
 }
 

@@ -23,7 +23,10 @@
 <body class="signin">
 <div class="signinpanel">
     <div class="row">
-        <div class="col-sm-7">
+        <div class="col-sm-3">
+            <!-- 左侧留空 -->
+        </div>
+        <div class="col-sm-9">
             <div class="signin-info">
                 <!-- <div class="logopanel m-b"> -->
                 <!--     <h1><img alt="[ 若依 ]" src="../static/ruoyi.png" th:src="@{/ruoyi.png}"></h1> -->
@@ -32,8 +35,6 @@
                 <h1>欢迎使用 <strong>会议系统</strong></h1>
                 <strong th:if="${isAllowRegister}">还没有账号？ <a th:href="@{/register}">立即注册&raquo;</a></strong>
             </div>
-        </div>
-        <div class="col-sm-5">
             <form id="signupForm" autocomplete="off">
                 <h4 class="no-margins">登录：</h4>
                 <!-- <p class="m-t-md">你若不离不弃，我必生死相依</p> -->

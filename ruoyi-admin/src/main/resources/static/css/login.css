@@ -3,15 +3,16 @@ html {
 }
 body.signin {
 	height:auto;
-	background:url(../img/login-background.jpg) no-repeat center fixed;
+	background:url(../img/login-background.png) no-repeat center fixed;
 	-webkit-background-size:cover;
 	-moz-background-size:cover;
 	-o-background-size:cover;
 	background-size:cover
 }
 .signinpanel {
-	width:750px;
-	margin:10% auto 0;
+	width:650px;
+    /*margin: 10% auto 0;*/
+	margin:10% 10% auto auto;
 	/*color:rgba(255,255,255,.95)*/
 }
 .signinpanel .logopanel {
