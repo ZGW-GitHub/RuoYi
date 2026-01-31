@@ -158,6 +158,8 @@ public class DeviceInfoServiceImpl extends ServiceImpl<DeviceInfoMapper, DeviceI
     }
 
     private List<DeviceInfo> buildNewDeviceInfo(List<String> wiredConnectedDeviceKeyList, Set<String> savedDeviceSerialSet) {
+        List<String> commonIpList = commonIp();
+
         List<DeviceInfo> newDeviceInfoList = new ArrayList<>();
         for (String deviceSerial : wiredConnectedDeviceKeyList) {
             if (savedDeviceSerialSet.contains(deviceSerial)) {
@@ -167,7 +169,8 @@ public class DeviceInfoServiceImpl extends ServiceImpl<DeviceInfoMapper, DeviceI
             DeviceInfo newDeviceInfo = new DeviceInfo();
             newDeviceInfo.setDeviceSerial(deviceSerial);
             newDeviceInfo.setDeviceName(StrUtil.EMPTY);
-            newDeviceInfo.setDeviceIp(StrUtil.EMPTY);
+            newDeviceInfo.setDeviceIp(StrUtil.format("{}.{}.{}.0", CollUtil.get(commonIpList, 0),
+                    CollUtil.get(commonIpList, 1), CollUtil.get(commonIpList, 2)));
             newDeviceInfo.setDeviceStatus(DeviceStatusEnum.CONNECTED_WIRED.getCode());
             newDeviceInfoList.add(newDeviceInfo);
         }

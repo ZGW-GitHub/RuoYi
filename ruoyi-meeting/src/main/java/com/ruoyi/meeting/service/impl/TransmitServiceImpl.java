@@ -6,7 +6,6 @@ import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.meeting.TransmitConfig;
 import com.ruoyi.meeting.domain.DeviceInfo;
 import com.ruoyi.meeting.enums.DeviceStatusEnum;
-import com.ruoyi.meeting.service.DeviceStatusService;
 import com.ruoyi.meeting.service.ShellService;
 import com.ruoyi.meeting.service.TransmitService;
 import com.ruoyi.meeting.utils.ConcurrentUtil;
@@ -27,9 +26,6 @@ import java.util.stream.Collectors;
 @Slf4j
 @Service
 public class TransmitServiceImpl implements TransmitService {
-
-    @Resource
-    public DeviceStatusService deviceStatusService;
 
     @Resource
     private ShellService shellService;
