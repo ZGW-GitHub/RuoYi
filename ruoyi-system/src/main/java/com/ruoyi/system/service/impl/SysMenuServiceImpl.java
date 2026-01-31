@@ -1,16 +1,5 @@
 package com.ruoyi.system.service.impl;
 
-import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 import com.ruoyi.common.constant.UserConstants;
 import com.ruoyi.common.core.domain.Ztree;
 import com.ruoyi.common.core.domain.entity.SysMenu;
@@ -20,6 +9,12 @@ import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.system.mapper.SysMenuMapper;
 import com.ruoyi.system.mapper.SysRoleMenuMapper;
 import com.ruoyi.system.service.ISysMenuService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.text.MessageFormat;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * 菜单 业务层处理
@@ -50,7 +45,12 @@ public class SysMenuServiceImpl implements ISysMenuService
         // 管理员显示所有菜单信息
         if (user.isAdmin())
         {
-            menus = menuMapper.selectMenuNormalAll();
+            menus = menuMapper.selectMenuNormalAll()
+                    .stream().filter(item -> {
+                        return !item.getMenuName().equals("我的议题")
+                                && !item.getMenuName().equals("通过议题")
+                                && !item.getMenuName().equals("驳回议题");
+                    }).collect(Collectors.toList());
         }
         else
         {
