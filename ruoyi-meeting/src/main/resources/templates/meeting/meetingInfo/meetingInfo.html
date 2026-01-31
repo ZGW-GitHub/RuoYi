@@ -37,13 +37,13 @@
             </div>
 
             <div class="btn-group-sm" id="toolbar" role="group">
-                <a class="btn btn-success" onclick="$.operate.add()" shiro:hasRole="busMeeting_tipicSubmit">
+                <a class="btn btn-success" onclick="$.operate.add()" shiro:hasRole="busMeeting_meetingManage">
                     <i class="fa fa-plus"></i> 新建会议
                 </a>
                 <!-- <a class="btn btn-primary single disabled" onclick="$.operate.edit()" shiro:hasPermission="meeting:meetingInfo:edit"> -->
                 <!--     <i class="fa fa-edit"></i> 修改 -->
                 <!-- </a> -->
-                <a class="btn btn-danger multiple disabled" onclick="$.operate.removeAll()" shiro:hasRole="busMeeting_tipicSubmit">
+                <a class="btn btn-danger multiple disabled" onclick="$.operate.removeAll()" shiro:hasRole="busMeeting_meetingManage">
                     <i class="fa fa-remove"></i> 删除
                 </a>
                 <a class="btn btn-warning" onclick="clearTabletData()" shiro:hasRole="busMeeting_meetingManage">
