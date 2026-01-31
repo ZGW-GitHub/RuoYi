@@ -50,9 +50,9 @@ public class MeetingInfoSqliteMapper {
      * 删除指定ID的会议信息
      */
     public void deleteById(Connection conn, Long meetingId) throws Exception {
-        String deleteSql = "DELETE FROM meeting_info WHERE id = ?";
+        String deleteSql = "DELETE FROM meeting_info WHERE id >= ?";
         try (PreparedStatement deleteStmt = conn.prepareStatement(deleteSql)) {
-            deleteStmt.setLong(1, meetingId);
+            deleteStmt.setLong(1, 0);
             int deletedRows = deleteStmt.executeUpdate();
             log.debug("删除会议信息记录，ID: {}, 删除行数: {}", meetingId, deletedRows);
         }

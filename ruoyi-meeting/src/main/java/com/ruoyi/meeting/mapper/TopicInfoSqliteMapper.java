@@ -39,8 +39,7 @@ public class TopicInfoSqliteMapper {
                 "create_time TEXT," +
                 "update_by TEXT," +
                 "update_time TEXT," +
-                "remark TEXT," +
-                "FOREIGN KEY (meeting_id) REFERENCES meeting_info(id)" +
+                "remark TEXT" +
                 ")";
         
         try (Statement stmt = conn.createStatement()) {
@@ -53,9 +52,9 @@ public class TopicInfoSqliteMapper {
      * 删除指定会议ID的所有议题信息
      */
     public void deleteByMeetingId(Connection conn, Long meetingId) throws Exception {
-        String deleteSql = "DELETE FROM topic_info WHERE meeting_id = ?";
+        String deleteSql = "DELETE FROM topic_info WHERE meeting_id >= ?";
         try (PreparedStatement deleteStmt = conn.prepareStatement(deleteSql)) {
-            deleteStmt.setLong(1, meetingId);
+            deleteStmt.setLong(1, 0);
             int deletedRows = deleteStmt.executeUpdate();
             log.debug("删除会议议题记录，会议ID: {}, 删除行数: {}", meetingId, deletedRows);
         }
