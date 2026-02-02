@@ -1,8 +1,15 @@
 package com.ruoyi.meeting.mapper;
 
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.io.FileUtil;
+import cn.hutool.core.util.StrUtil;
+import cn.hutool.json.JSONUtil;
+import com.ruoyi.common.dto.FileInfoDTO;
+import com.ruoyi.common.utils.FileUploadUtil;
+import com.ruoyi.meeting.TransmitConfig;
 import com.ruoyi.meeting.controller.resp.RelatedTopicResp;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
 import java.sql.Connection;
@@ -130,6 +137,30 @@ public class TopicInfoSqliteMapper {
     public void saveByMeetingId(Connection conn, List<RelatedTopicResp> topicList, Long meetingId) throws Exception {
         deleteByMeetingId(conn, meetingId);
         if (CollUtil.isNotEmpty(topicList)) {
+            topicList.forEach(item -> {
+                String fileInfoJson = item.getFileInfo();
+                if (StrUtil.isBlank(fileInfoJson)) {
+                    return;
+                }
+
+                List<FileInfoDTO> dtoList = JSONUtil.toList(fileInfoJson, FileInfoDTO.class);
+                dtoList.forEach(dto -> {
+                    String fileUrl = dto.getFileUrl();
+                    if (StrUtil.isBlank(fileUrl)) {
+                        return;
+                    }
+
+                    String filePath = FileUploadUtil.fileUrlToPath(fileUrl);
+                    if (!FileUtil.exist(filePath)) {
+                        log.warn("议题关联的文件不存在，议题ID: {}, 文件路径: {}", item.getId(), filePath);
+                        return;
+                    }
+                    FileUtil.copyFile(filePath, TransmitConfig.getSource().getPathDraft() + FileUtil.FILE_SEPARATOR + FileUtil.getName(filePath));
+                    fileUrl = StrUtil.subAfter(fileUrl, item.getId() + "", false);
+                    dto.setFileUrl(StringUtils.stripStart(fileUrl, "/\\"));
+                });
+                item.setFileInfo(JSONUtil.toJsonStr(dtoList));
+            });
             batchInsert(conn, topicList, meetingId);
         }
         log.info("保存会议议题信息到SQLite成功，会议ID: {}, 议题数量: {}", meetingId, topicList.size());

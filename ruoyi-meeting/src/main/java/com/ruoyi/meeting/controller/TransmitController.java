@@ -1,6 +1,7 @@
 package com.ruoyi.meeting.controller;
 
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.util.StrUtil;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.meeting.TransmitConfig;
@@ -68,6 +69,13 @@ public class TransmitController {
             if (CollUtil.isEmpty(connectedDeviceList)) {
                 return AjaxResult.error("没有已连接的设备");
             }
+
+            try {
+                FileUtil.del(TransmitConfig.getSource().getPathDraft());
+            } catch (Exception e) {
+                log.warn("删除传输源目录失败: {}", TransmitConfig.getSource().getPathDraft(), e);
+            }
+            FileUtil.mkdir(TransmitConfig.getSource().getPathDraft());
 
             // 2.1、创建 SQLite 数据库连接
             Class.forName("org.sqlite.JDBC");

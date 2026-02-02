@@ -1,0 +1,18 @@
+ruoyi:
+  profile: D:\huiyi
+meeting:
+  transmit:
+    source:
+      all: ${meeting.transmit.base-dir-path}\${meeting.transmit.base-dir-name}
+      path-db: ${meeting.transmit.source.all}\${meeting.transmit.sub-dir-db}
+      path-draft: ${meeting.transmit.source.all}\${meeting.transmit.sub-dir-draft}
+spring:
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource
+    driverClassName: com.mysql.cj.jdbc.Driver
+    druid:
+      # 主库数据源
+      master:
+        url: jdbc:mysql://127.0.0.1:3306/meeting?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
+        username: root
+        password: 123456

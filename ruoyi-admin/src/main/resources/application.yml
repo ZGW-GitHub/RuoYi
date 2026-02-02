@@ -18,7 +18,7 @@ ruoyi:
 # 开发环境配置
 server:
   # 服务器的HTTP端口，默认为80
-  port: 54321
+  port: 8086
   servlet:
     # 应用的访问路径
     context-path: /
@@ -85,9 +85,6 @@ spring:
   # JMX 配置
   jmx:
     default-domain: ${ruoyi.name}
-  config:
-    import:
-      - classpath:application-meeting.yml
 # MyBatis
 # mybatis:
 #   # 搜索指定包别名
@@ -170,3 +167,24 @@ csrf:
 swagger:
   # 是否开启swagger
   enabled: false
+
+meeting:
+  transmit:
+    app-bundle: com.zzedu.DepartMentalApp
+    base-dir-path: ${ruoyi.profile}
+    base-dir-name: bus-meeting
+    sub-dir-db: DB
+    sub-dir-draft: Draft
+    # sub-dir-study: Study
+    # sub-dir-material: Material
+    source:
+      all: ${meeting.transmit.base-dir-path}/${meeting.transmit.base-dir-name}
+      path-db: ${meeting.transmit.source.all}/${meeting.transmit.sub-dir-db}
+      path-draft: ${meeting.transmit.source.all}/${meeting.transmit.sub-dir-draft}
+      # path-study: ${meeting.transmit.source.all}/${meeting.transmit.sub-dir-study}
+      # path-material: ${meeting.transmit.source.all}/${meeting.transmit.sub-dir-material}
+    target:
+      all: ./data/storage/el2/base
+      path-db: ${meeting.transmit.target.all}/${meeting.transmit.base-dir-name}
+      # path-study: ${meeting.transmit.target.all}/${meeting.transmit.base-dir-name}/${meeting.transmit.sub-dir-study}
+      # path-material: ${meeting.transmit.target.all}/${meeting.transmit.base-dir-name}/${meeting.transmit.sub-dir-material}
